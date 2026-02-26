@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Adrian Casino Clicker</title>
-
+<title>Adrians Casino</title>
 <style>
 body {
     margin: 0;
@@ -17,7 +16,6 @@ body {
 h1 {
     font-size: 48px;
     text-shadow: 0 0 15px red;
-    margin-top: 10px;
 }
 
 #container {
@@ -35,6 +33,7 @@ h1 {
     cursor: pointer;
     animation: spin 3s linear infinite;
     box-shadow: 0 0 40px red;
+    transition: 0.2s;
 }
 
 #mainImage.clicked {
@@ -48,7 +47,7 @@ h1 {
 
 @keyframes bounce {
     0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+    50% { transform: scale(1.25); }
     100% { transform: scale(1); }
 }
 
@@ -60,7 +59,6 @@ button {
     margin: 5px;
     cursor: pointer;
     font-weight: bold;
-    transition: 0.1s;
 }
 
 button:active {
@@ -71,7 +69,6 @@ button:active {
     margin-top: 35px;
 }
 
-/* SLOT MACHINE */
 #slotBox {
     background: #111;
     border: 3px solid gold;
@@ -81,30 +78,23 @@ button:active {
     width: 260px;
 }
 
-.reels {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    font-size: 40px;
-    margin: 15px 0;
-}
-
-.reel {
-    background: black;
-    padding: 15px;
-    border: 2px solid gold;
-    width: 50px;
-}
-
 input {
-    width: 80px;
-    padding: 5px;
+    width: 120px;
+    padding: 6px;
     text-align: center;
 }
 
 #slotResult {
     min-height: 25px;
     margin-top: 10px;
+    font-weight: bold;
+}
+
+#slotDisplay {
+    font-size: 40px;
+    margin: 15px 0;
+    letter-spacing: 10px;
+    text-shadow: 0 0 15px gold;
 }
 
 .floating {
@@ -123,7 +113,7 @@ input {
 </head>
 <body>
 
-<h1>🎰 ADRIAN CASINO 🎰</h1>
+<h1>🎰 ADRIAN CLICKER 🎰</h1>
 
 <div>
 Adrains: <span id="score">0</span> |
@@ -132,34 +122,57 @@ Rebirths: <span id="rebirths">0</span>
 
 <div id="container">
 
-<div>
-<img id="mainImage" src="https://i.ibb.co/KzpvPDv5/IMG-20260224-122424.jpg">
+    <!-- LEFT SIDE -->
+    <div>
+        <img id="mainImage" src="https://i.ibb.co/KzpvPDv5/IMG-20260224-122424.jpg">
 
-<div id="shop">
-<button onclick="buyAuto()">Auto Adrainer (<span id="autoCost">50</span>)</button><br>
-<button onclick="buyMulti()">Multiplier (<span id="multiCost">100</span>)</button><br>
-<button onclick="rebirth()">Rebirth (10,000)</button>
+        <div id="shop">
+            <button onclick="buyAuto()">Auto Adrainer (<span id="autoCost">50</span>)</button><br>
+            <button onclick="buyMulti()">Multiplier (<span id="multiCost">100</span>)</button><br>
+            <button onclick="rebirth()">Rebirth (10,000)</button>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE SLOT -->
+    <div>
+        <div id="slotBox">
+            <h3>SPIN THE WHEEL</h3>
+            <div id="slotDisplay">🎰 | 🎰 | 🎰</div>
+            <input type="text" id="betAmount" placeholder="Enter Bet">
+            <button onclick="spinSlot()">SPIN</button>
+            <div id="slotResult"></div>
+        </div>
+
+        <!-- GLOBAL LEADERBOARD BOX -->
+        <div id="leaderboardBox" style="background:#111;border:3px solid gold;padding:20px;border-radius:15px;box-shadow:0 0 30px red;width:260px;margin-top:20px;">
+            <h3>GLOBAL LEADERBOARD</h3>
+            <div id="usernameDisplay" style="margin-bottom:8px;font-size:14px;">
+                You: <span id="currentUsername">...</span>
+            </div>
+            <div id="leaderboardList" style="text-align:left;font-size:14px;max-height:220px;overflow-y:auto;">
+                Loading leaderboard...
+            </div>
+        </div>
+    </div>
+
 </div>
-</div>
 
-<div id="slotBox">
-<h3>🎰 High Risk Gambling 🎰</h3>
-
-<div class="reels">
-<div class="reel" id="r1">❓</div>
-<div class="reel" id="r2">❓</div>
-<div class="reel" id="r3">❓</div>
-</div>
-
-<input type="number" id="betAmount" placeholder="Bet">
-<button onclick="spinSlot()">SPIN</button>
-
-<div id="slotResult"></div>
-</div>
-
-</div>
+<!-- SUPABASE CDN -->
+<script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
 
 <script>
+// ==== SUPABASE CONFIG ====
+const SUPABASE_URL = "https://ejxivungfjeqtvnpneja.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqeGl2dW5nZmplcXR2bnBuZWphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNDY4ODAsImV4cCI6MjA4NzYyMjg4MH0.L2Xyi2D-nI53mLZo1ZwJ1GDGZCM96gUD6dQBt2D7c5w";
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==== USERNAME + LEADERBOARD STATE ====
+let username = null;
+const usernameDisplayEl = document.getElementById("currentUsername");
+const leaderboardListEl = document.getElementById("leaderboardList");
+
+// ==== ORIGINAL GAME STATE ====
 let score = 0;
 let multiplier = 1;
 let autoClickers = 0;
@@ -173,9 +186,86 @@ const autoCostEl = document.getElementById("autoCost");
 const multiCostEl = document.getElementById("multiCost");
 const mainImage = document.getElementById("mainImage");
 const slotResult = document.getElementById("slotResult");
+const slotDisplay = document.getElementById("slotDisplay");
 
-const symbols = ["🍒","💎","7️⃣","🔥","🍀"];
+/* USERNAME SYSTEM */
+function loadOrAskUsername(){
+    let savedName = localStorage.getItem("adrianUsername");
+    if(!savedName){
+        let input = "";
+        while(!input){
+            input = prompt("Enter a username for the global leaderboard:");
+            if(input === null) break; // user cancelled
+            if(input) input = input.trim();
+            if(input === "") input = null;
+        }
+        if(!input){
+            // fallback if user cancels or leaves blank
+            input = "Guest_" + Math.floor(Math.random()*100000);
+        }
+        localStorage.setItem("adrianUsername", input);
+        savedName = input;
+    }
+    username = savedName;
+    usernameDisplayEl.textContent = username;
+}
 
+/* SYNC PLAYER TO SUPABASE (UPSERT) */
+async function syncPlayerToSupabase(){
+    if(!username) return;
+    try{
+        const { error } = await supabaseClient
+            .from("leaderboard")
+            .upsert(
+                { username: username, rebirths: rebirths },
+                { onConflict: "username" }
+            );
+        if(error){
+            console.error("Supabase upsert error:", error.message);
+        }
+    } catch(err){
+        console.error("Supabase upsert exception:", err);
+    }
+}
+
+/* FETCH LEADERBOARD */
+async function fetchLeaderboard(){
+    try{
+        const { data, error } = await supabaseClient
+            .from("leaderboard")
+            .select("username, rebirths")
+            .order("rebirths", { ascending: false })
+            .limit(20);
+
+        if(error){
+            console.error("Supabase fetch error:", error.message);
+            leaderboardListEl.textContent = "Error loading leaderboard.";
+            return;
+        }
+
+        if(!data || data.length === 0){
+            leaderboardListEl.textContent = "No players yet.";
+            return;
+        }
+
+        let html = "";
+        data.forEach((row, index)=>{
+            html += `<div>${index+1}. <strong>${row.username}</strong> — ${row.rebirths} rebirths</div>`;
+        });
+        leaderboardListEl.innerHTML = html;
+    } catch(err){
+        console.error("Supabase fetch exception:", err);
+        leaderboardListEl.textContent = "Error loading leaderboard.";
+    }
+}
+
+/* START AUTO REFRESH LOOP */
+function startLeaderboardLoop(){
+    fetchLeaderboard();
+    setInterval(fetchLeaderboard, 5000); // every 5 seconds
+}
+
+/* UPDATE UI */
 function updateUI(){
     scoreEl.textContent = Math.floor(score);
     rebirthEl.textContent = rebirths;
@@ -183,14 +273,12 @@ function updateUI(){
     multiCostEl.textContent = multiCost;
 }
 
-/* CLICK */
+/* CLICK ADRIAN */
 mainImage.addEventListener("click",(e)=>{
     let gain = multiplier*(1+rebirths);
     score += gain;
-
     mainImage.classList.add("clicked");
     setTimeout(()=>mainImage.classList.remove("clicked"),300);
-
     createFloating(e.clientX,e.clientY,"+"+gain);
     updateUI();
 });
@@ -205,7 +293,7 @@ function createFloating(x,y,text){
     setTimeout(()=>el.remove(),700);
 }
 
-/* SHOP */
+/* SHOP FUNCTIONS */
 function buyAuto(){
     if(score>=autoCost){
         score-=autoCost;
@@ -214,7 +302,6 @@ function buyAuto(){
         updateUI();
     }
 }
-
 function buyMulti(){
     if(score>=multiCost){
         score-=multiCost;
@@ -223,7 +310,6 @@ function buyMulti(){
         updateUI();
     }
 }
-
 function rebirth(){
     if(score>=10000){
         rebirths++;
@@ -233,54 +319,91 @@ function rebirth(){
         autoCost=50;
         multiCost=100;
         updateUI();
+        syncPlayerToSupabase(); // update global leaderboard on rebirth
     }
 }
 
-/* AUTO */
+/* AUTO ADRIAN GENERATION */
 setInterval(()=>{
     score+=autoClickers*multiplier*(1+rebirths);
     updateUI();
 },500);
 
-/* HARDER SLOT MACHINE */
+/* 🎰 SLOT MACHINE */
+const symbols = ["💎","💰","🔥","🍀","⭐","🎰","👑","💀"];
+
 function spinSlot(){
-    let bet=parseInt(document.getElementById("betAmount").value);
-    if(isNaN(bet)||bet<=0){ slotResult.textContent="Invalid bet."; return;}
-    if(bet>score){ slotResult.textContent="Not enough Adrains."; return;}
+    let rawInput = document.getElementById("betAmount").value.trim();
 
-    score-=bet;
-
-    let r1=symbols[Math.floor(Math.random()*symbols.length)];
-    let r2=symbols[Math.floor(Math.random()*symbols.length)];
-    let r3=symbols[Math.floor(Math.random()*symbols.length)];
-
-    document.getElementById("r1").textContent=r1;
-    document.getElementById("r2").textContent=r2;
-    document.getElementById("r3").textContent=r3;
-
-    if(r1===r2 && r2===r3){
-        if(r1==="7️⃣"){
-            let jackpot=bet*10;
-            score+=jackpot;
-            slotResult.textContent="💎 MEGA JACKPOT! +"+jackpot;
-        } else {
-            let win=bet*3;
-            score+=win;
-            slotResult.textContent="🔥 Big Win! +"+win;
-        }
-    } else {
-        slotResult.textContent="House wins. 💀";
+    // CHEATS
+    if(rawInput === "MONEY$1M"){
+        score += 1000000;
+        slotResult.textContent="💸 +1,000,000 ADRIANS";
+        updateUI();
+        return;
     }
 
+    let instantWin = false;
+    let bet;
+
+    if(rawInput.includes("(win07)")){
+        instantWin = true;
+        bet = parseInt(rawInput.replace("(win07)",""));
+    } else {
+        bet = parseInt(rawInput);
+    }
+
+    if(isNaN(bet) || bet <= 0){
+        slotResult.textContent="Invalid bet.";
+        return;
+    }
+
+    if(bet > score){
+        slotResult.textContent="Not enough Adrains.";
+        return;
+    }
+
+    score -= bet;
     updateUI();
+
+    let spins = 0;
+    const spinInterval = setInterval(()=>{
+        let e1 = symbols[Math.floor(Math.random()*symbols.length)];
+        let e2 = symbols[Math.floor(Math.random()*symbols.length)];
+        let e3 = symbols[Math.floor(Math.random()*symbols.length)];
+        slotDisplay.innerText = `${e1} | ${e2} | ${e3}`;
+        spins++;
+        if(spins > 20){
+            clearInterval(spinInterval);
+
+            // WIN LOGIC
+            if(instantWin){
+                let payout = bet * 100;
+                score += payout;
+                slotDisplay.innerText = "💎 | 💎 | 💎";
+                slotResult.textContent = "🕵️ INSTANT WIN +" + payout;
+            } else if(Math.random() < 0.02){
+                let payout = bet * 100;
+                score += payout;
+                slotDisplay.innerText = "💎 | 💎 | 💎";
+                slotResult.textContent = "💎 2% JACKPOT! +" + payout;
+            } else {
+                slotDisplay.innerText = "💀 | 💀 | 💀";
+                slotResult.textContent = "House wins. 💀";
+            }
+
+            updateUI();
+            saveGame();
+        }
+    },70);
 }
 
 /* SAVE SYSTEM */
-setInterval(()=>{
+function saveGame(){
     localStorage.setItem("adrianCasinoSave",JSON.stringify({
         score,multiplier,autoClickers,autoCost,multiCost,rebirths
     }));
-},3000);
+}
 
 window.onload=()=>{
     let save=JSON.parse(localStorage.getItem("adrianCasinoSave"));
@@ -292,11 +415,15 @@ window.onload=()=>{
         multiCost=save.multiCost;
         rebirths=save.rebirths;
     }
+    loadOrAskUsername();
+    syncPlayerToSupabase();
+    startLeaderboardLoop();
     updateUI();
 };
 
+setInterval(saveGame,3000);
+
 updateUI();
 </script>
-
 </body>
 </html>
