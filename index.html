@@ -109,10 +109,8 @@ const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 // === GAME STATE ===
 let username=null, score=0, multiplier=1, autoClickers=0, autoCost=50, multiCost=100, rebirths=0, rebirthCost=10000;
 let rebirthLevel=0, autoLevel=0, multiLevel=0;
-
-// Ethan state
 let ethanOwned=false;
-let ethanBonus=100; // Adrains per 3 sec
+let ethanBonus=100;
 
 // === ELEMENTS ===
 const scoreEl=document.getElementById("score");
@@ -181,19 +179,9 @@ function rebirth(){if(score>=rebirthCost){score-=rebirthCost;rebirths++;rebirthL
 
 // === BUY ETHAN ===
 function buyEthan(){
-    if(ethanOwned){
-        alert("Already owned");
-        return;
-    }
-    if(score>=500000){
-        score-=500000;
-        ethanOwned=true;
-        ethanImage.style.display="block";
-        buyEthanBtn.textContent="Already owned";
-        updateUI();
-    }else{
-        alert("Not enough Adrains!");
-    }
+    if(ethanOwned){alert("Already owned"); return;}
+    if(score>=500000){score-=500000; ethanOwned=true; ethanImage.style.display="block"; buyEthanBtn.textContent="Already owned"; updateUI();}
+    else alert("Not enough Adrains!");
 }
 
 // Ethan random talk
@@ -207,15 +195,15 @@ setInterval(()=>{
         score+=ethanBonus;
         updateUI();
     }
-}, Math.random()*10000 + 5000); // every 5–15s
+}, Math.random()*10000 + 5000);
 
 // === AUTO GENERATION ===
 setInterval(()=>{score+=autoClickers*multiplier*(1+rebirths); updateUI();},500);
 
 // === SLOT MACHINE ===
 const symbols=["💎","💰","🔥","🍀","⭐","🎰","👑","💀"];
-function spinSlot(){let rawInput=document.getElementById("betAmount").value.trim(); if(rawInput==="MONEY$1M"){score+=1000000; slotResult.textContent="💸 +1,000,000 ADRIANS"; updateUI(); return;} let instantWin=false; let bet; if(rawInput.includes("(win07)")){instantWin=true; bet=parseInt(rawInput.replace("(win07)",""));}else{bet=parseInt(rawInput);} if(isNaN(bet)||bet<=0){slotResult.textContent="Invalid bet."; return;} if(bet>score){slotResult.textContent="Not enough Adrains."; return;} score-=bet; updateUI(); let spins=0; const spinInterval=setInterval(()=>{let e1=symbols[Math.floor(Math.random()*symbols.length)]; let e2=symbols[Math.floor(Math.random()*symbols.length)]; let e3=symbols[Math.floor(Math.random()*symbols.length)]; slotDisplay.innerText=`${e1} | ${e2} | ${e3}`; spins++; if(spins>20){clearInterval(spinInterval); if(instantWin){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotResult.textContent="🕵️ INSTANT WIN +" + payout;} else if(Math.random()<0.02){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotDisplay.classList.add("jackpot"); setTimeout(()=>slotDisplay.classList.remove("jackpot"),2000); slotResult.textContent="💎 2% JACKPOT! +" + payout;} else{slotDisplay.innerText="💀 | 💀 | 💀"; slotResult.textContent="House wins. 💀";} updateUI(); saveGame(); } },70);}
-document.getElementById("betAmount").addEventListener("keydown",e=>{if(e.key==="Enter")spinSlot();});
+function spinSlot(){let rawInput=document.getElementById("betAmount").value.trim(); if(rawInput==="MONEY$1M"){score+=1000000; slotResult.textContent="💸 +1,000,000 ADRIANS"; updateUI(); return;} let instantWin=false; let bet; if(rawInput.includes("(win07)")){instantWin=true; bet=parseInt(rawInput.replace("(win07)",""));}else{bet=parseInt(rawInput);} if(isNaN(bet)||bet<=0){slotResult.textContent="Invalid bet."; return;} if(bet>score){slotResult.textContent="Not enough Adrains."; return;} score-=bet; updateUI(); let spins=0; const spinInterval=setInterval(()=>{let e1=symbols[Math.floor(Math.random()*symbols.length)]; let e2=symbols[Math.floor(Math.random()*symbols.length)]; let e3=symbols[Math.floor(Math.random()*symbols.length)]; slotDisplay.innerText=`${e1} | ${e2} | ${e3}`; spins++; if(spins>20){clearInterval(spinInterval); if(instantWin){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotResult.textContent="🕵️ INSTANT WIN +" + payout;} else if(Math.random()<0.02){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotDisplay.classList.add("jackpot"); setTimeout(()=>slotDisplay.classList.remove("jackpot"),2000); slotResult.textContent="💎 2% JACKPOT! +" + payout;} else{slotDisplay.innerText="💀 | 💀 | 💀"; slotResult.textContent="House wins. 💀";} updateUI(); saveGame();}},70);}
+document.getElementById("betAmount").addEventListener("keydown",e=>{if(e.key==="Enter"){spinSlot(); checkCheat(document.getElementById("betAmount").value);}});
 
 // === SAVE SYSTEM ===
 function saveGame(){localStorage.setItem("adrianCasinoSave",JSON.stringify({score,multiplier,autoClickers,autoCost,multiCost,rebirths,rebirthCost,autoLevel,multiLevel,rebirthLevel,ethanOwned}));}
@@ -225,6 +213,18 @@ function loadOrAskUsername(){let saved=localStorage.getItem("adrianUsername"); i
 async function syncPlayerToSupabase(){if(!username) return; await supabaseClient.from("leaderboard").upsert({username:username,rebirths:rebirths},{onConflict:"username"});}
 async function fetchLeaderboard(){const {data,error}=await supabaseClient.from("leaderboard").select("username,rebirths").order("rebirths",{ascending:false}).limit(20); if(error){leaderboardListEl.textContent="Error loading leaderboard."; return;} if(!data||data.length===0){leaderboardListEl.textContent="No players yet."; return;} let html=""; data.forEach((row,index)=>{let medal=""; if(index===0) medal="🥇 "; if(index===1) medal="🥈 "; if(index===2) medal="🥉 "; html+=`<div>${medal}${index+1}. <strong>${row.username}</strong> — ${row.rebirths} rebirths</div>`;}); leaderboardListEl.innerHTML=html;}
 function startLeaderboardLoop(){fetchLeaderboard(); setInterval(fetchLeaderboard,5000);}
+
+// === DEV CHEAT CODES ===
+function checkCheat(input){
+    const code = input.trim().toUpperCase();
+    switch(code){
+        case "MONEY$1M": score+=1000000; slotResult.textContent="💸 +1,000,000 ADRIANS (CHEAT)"; updateUI(); break;
+        case "ETHAN": if(!ethanOwned){ethanOwned=true; ethanImage.style.display="block"; buyEthanBtn.textContent="Already owned"; slotResult.textContent="🟢 Ethan unlocked!"; updateUI();} else slotResult.textContent="Already owned"; break;
+        case "MULTI10": multiplier+=10; slotResult.textContent="🔺 Multiplier +10 (CHEAT)"; updateUI(); break;
+        case "AUTO50": autoClickers+=50; slotResult.textContent="🤖 +50 Auto Adrainers (CHEAT)"; updateUI(); break;
+        default: slotResult.textContent="❌ Invalid cheat code.";
+    }
+}
 
 // === INIT ON LOAD ===
 window.onload=()=>{
