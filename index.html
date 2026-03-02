@@ -1,10 +1,10 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
 <script>
 // ==========================
-// SUPABASE
+// SUPABASE (your original key here)
 // ==========================
 const SUPABASE_URL="https://ejxivungfjeqtvnpneja.supabase.co";
-const SUPABASE_ANON_KEY="YOUR_KEY_HERE"; // keep your old key
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqeGl2dW5nZmplcXR2bnBuZWphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNDY4ODAsImV4cCI6MjA4NzYyMjg4MH0.L2Xyi2D-nI53mLZo1ZwJ1GDGZCM96gUD6dQBt2D7c5w";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 // ==========================
@@ -31,7 +31,9 @@ const autoCostEl=document.getElementById("autoCost");
 const multiCostEl=document.getElementById("multiCost");
 const rebirthCostEl=document.getElementById("rebirthCost");
 const mainImage=document.getElementById("mainImage");
-const apsEl=document.getElementById("aps");
+const apsEl=document.createElement("span"); // APS element
+apsEl.id="aps";
+document.querySelector('div').insertAdjacentHTML('beforeend', ' (<span id="aps">0</span>/sec)');
 const slotResult=document.getElementById("slotResult");
 const slotDisplay=document.getElementById("slotDisplay");
 const ethanImage=document.getElementById("ethanImage");
