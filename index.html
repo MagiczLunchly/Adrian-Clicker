@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Adrians Casino V2</title>
+<title>Adrians Casino</title>
 <style>
 body {
     margin: 0;
@@ -11,25 +11,27 @@ body {
     background: radial-gradient(circle at center, #111 0%, #000 80%);
     color: gold;
     text-align: center;
-    overflow-x: hidden;
+    animation: bgPulse 6s infinite alternate;
 }
+@keyframes bgPulse { 0% { filter: brightness(1); } 100% { filter: brightness(1.15); } }
+
 h1 { font-size: 48px; text-shadow: 0 0 15px red; }
 
 #container { display: flex; justify-content: center; gap: 60px; margin-top: 20px; }
 
-#mainImage { width: 260px; height: 260px; object-fit: cover; border-radius: 20px; cursor: pointer; animation: spin 3s linear infinite; box-shadow: 0 0 40px red; transition: 0.2s; z-index: 2; }
+#mainImage { width: 260px; height: 260px; object-fit: cover; border-radius: 20px; cursor: pointer; animation: spin 3s linear infinite; box-shadow: 0 0 40px red; transition: 0.2s; }
 #mainImage.clicked { animation: bounce 0.3s ease; }
 
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes bounce { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
 
-button { background: black; border: 2px solid gold; color: gold; padding: 10px 20px; margin: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; z-index: 2; }
+button { background: black; border: 2px solid gold; color: gold; padding: 10px 20px; margin: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
 button:hover { box-shadow: 0 0 15px gold; }
 button:active { transform: scale(0.9); }
 
 #shop { margin-top: 35px; }
 
-#slotBox,#leaderboardBox { background: #111; border: 3px solid gold; padding: 20px; border-radius: 15px; box-shadow: 0 0 30px red; width: 260px; transition: 0.3s; z-index: 2; }
+#slotBox,#leaderboardBox { background: #111; border: 3px solid gold; padding: 20px; border-radius: 15px; box-shadow: 0 0 30px red; width: 260px; transition: 0.3s; }
 #slotBox:hover,#leaderboardBox:hover { box-shadow: 0 0 50px red,0 0 80px gold; }
 
 input { width: 120px; padding: 6px; text-align: center; }
@@ -45,38 +47,17 @@ input { width: 120px; padding: 6px; text-align: center; }
 .spark { position:absolute; width:6px; height:6px; background:gold; border-radius:50%; pointer-events:none; animation:sparkFly 0.7s ease-out forwards; }
 @keyframes sparkFly { from{opacity:1; transform:translate(0,0) scale(1);} to{opacity:0; transform:translate(var(--x),var(--y)) scale(0.5);} }
 
-#adrianWalkers { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
-
-.adrianWalker {
-    position: absolute;
-    bottom: 0;
-    left: -120px;
-    width: 80px;
-    height: 80px;
-    opacity: 0.15;
-    pointer-events: none;
-    animation: walkAcross linear forwards;
-}
-@keyframes walkAcross {
-    from { transform: translateX(0); }
-    to { transform: translateX(120vw); }
-}
-
-/* Ethan */
-#ethanContainer { position:fixed; right:20px; bottom:50px; display:flex; flex-direction:column; align-items:center; pointer-events:none; z-index:2; }
-#ethanImage { width:80px; height:80px; border-radius:10px; margin-bottom:5px; display:none; }
+#ethanContainer { position:fixed; right:20px; bottom:50px; display:flex; flex-direction:column; align-items:center; pointer-events:none; }
+#ethanImage { width:80px; height:80px; border-radius:10px; margin-bottom:5px; }
 #ethanBubble { background:#000; color:lime; padding:4px 8px; border-radius:6px; font-size:12px; display:none; text-align:center; max-width:120px; }
-
-/* APS Counter styling */
-#aps { font-weight:bold; }
 </style>
 </head>
 <body>
 
-<h1>🎰 ADRIAN CLICKER V2 🎰</h1>
+<h1>🎰 ADRIAN CLICKER 🎰</h1>
 
 <div>
-Adrains: <span id="score">0</span> (<span id="aps">0</span>/sec) |
+Adrains: <span id="score">0</span> |
 Rebirths: <span id="rebirths">0</span>
 </div>
 
@@ -84,7 +65,7 @@ Rebirths: <span id="rebirths">0</span>
 <div>
 <img id="mainImage" src="https://i.ibb.co/KzpvPDv5/IMG-20260224-122424.jpg">
 <div id="shop">
-<button onclick="buyAuto()">Hire a Adrian (<span id="autoCost">50</span>)</button><br>
+<button onclick="buyAuto()">Auto Adrainer (<span id="autoCost">50</span>)</button><br>
 <button onclick="buyMulti()">Multiplier (<span id="multiCost">100</span>)</button><br>
 <button onclick="rebirth()">Rebirth (<span id="rebirthCost">10000</span>)</button><br>
 <button id="buyEthanBtn" onclick="buyEthan()">Hire Jonathan (500K)</button>
@@ -112,42 +93,32 @@ Loading leaderboard...
 </div>
 </div>
 
-<!-- Walkers container -->
-<div id="adrianWalkers"></div>
-
 <!-- Ethan Container -->
 <div id="ethanContainer">
-<img id="ethanImage" src="https://i.ibb.co/TDKYLBcw/IMG-2139.avif">
+<img id="ethanImage" src="https://i.ibb.co/TDKYLBcw/IMG-2139.avif" style="display:none;">
 <div id="ethanBubble"></div>
 </div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
 <script>
-// -------------------------
-// SUPABASE
-// -------------------------
+// === SUPABASE ===
 const SUPABASE_URL="https://ejxivungfjeqtvnpneja.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqeGl2dW5nZmplcXR2bnBuZWphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNDY4ODAsImV4cCI6MjA4NzYyMjg4MH0.L2Xyi2D-nI53mLZo1ZwJ1GDGZCM96gUD6dQBt2D7c5w";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-// -------------------------
-// GAME STATE
-// -------------------------
-let username=null, score=0, multiplier=1, hiredAdrians=0, autoCost=50, multiCost=100;
-let rebirths=0, rebirthCost=10000, rebirthLevel=0, autoLevel=0, multiLevel=0;
+// === GAME STATE ===
+let username=null, score=0, multiplier=1, autoClickers=0, autoCost=50, multiCost=100, rebirths=0, rebirthCost=10000;
+let rebirthLevel=0, autoLevel=0, multiLevel=0;
 let ethanOwned=false;
 let ethanBonus=100;
 
-// -------------------------
-// ELEMENTS
-// -------------------------
+// === ELEMENTS ===
 const scoreEl=document.getElementById("score");
 const rebirthEl=document.getElementById("rebirths");
 const autoCostEl=document.getElementById("autoCost");
 const multiCostEl=document.getElementById("multiCost");
 const rebirthCostEl=document.getElementById("rebirthCost");
 const mainImage=document.getElementById("mainImage");
-const apsEl=document.getElementById("aps");
 const slotResult=document.getElementById("slotResult");
 const slotDisplay=document.getElementById("slotDisplay");
 const leaderboardListEl=document.getElementById("leaderboardList");
@@ -155,21 +126,17 @@ const usernameDisplayEl=document.getElementById("currentUsername");
 const ethanImage=document.getElementById("ethanImage");
 const ethanBubble=document.getElementById("ethanBubble");
 const buyEthanBtn=document.getElementById("buyEthanBtn");
-const walkerContainer=document.getElementById("adrianWalkers");
 
-// -------------------------
-// FUNCTIONS
-// -------------------------
-function getClickPower(){return multiplier*(1+rebirths);}
-function getAPS(){return hiredAdrians*getClickPower();}
+// === UI UPDATE ===
 function updateUI(){
     scoreEl.textContent=Math.floor(score);
     rebirthEl.textContent=rebirths;
     autoCostEl.textContent=autoCost;
     multiCostEl.textContent=multiCost;
     rebirthCostEl.textContent=rebirthCost;
-    apsEl.textContent=Math.floor(getAPS());
 }
+
+// === FLOATS & SPARKS ===
 function createFloating(x,y,text){
     const el=document.createElement("div");
     el.className="floating";
@@ -193,8 +160,10 @@ function createSparkBurst(x,y){
         setTimeout(()=>spark.remove(),700);
     }
 }
+
+// === CLICK ADRIAN ===
 mainImage.addEventListener("click",(e)=>{
-    let gain=getClickPower();
+    let gain=multiplier*(1+rebirths);
     score+=gain;
     mainImage.classList.add("clicked");
     setTimeout(()=>mainImage.classList.remove("clicked"),300);
@@ -202,27 +171,21 @@ mainImage.addEventListener("click",(e)=>{
     createSparkBurst(e.clientX,e.clientY);
     updateUI();
 });
-function spawnWalker(){
-    const walker=document.createElement("img");
-    walker.src=mainImage.src;
-    walker.className="adrianWalker";
-    walker.style.bottom=(Math.random()*50)+"px";
-    walker.style.animationDuration=(6+Math.random()*4)+"s";
-    walkerContainer.appendChild(walker);
-    setTimeout(()=>walker.remove(),10000);
+
+// === SHOP FUNCTIONS ===
+function buyAuto(){if(score>=autoCost){score-=autoCost;autoClickers++;autoLevel++; autoCost*=2; updateUI();}}
+function buyMulti(){if(score>=multiCost){score-=multiCost;multiplier++;multiLevel++; multiCost*=2; updateUI();}}
+function rebirth(){if(score>=rebirthCost){score-=rebirthCost;rebirths++;rebirthLevel++; score=0; multiplier=1; autoClickers=0; autoCost=50; multiCost=100; rebirthCost*=2; updateUI(); syncPlayerToSupabase();}}
+
+// === BUY ETHAN ===
+function buyEthan(){
+    if(ethanOwned){alert("Already owned"); return;}
+    if(score>=500000){score-=500000; ethanOwned=true; ethanImage.style.display="block"; buyEthanBtn.textContent="Already owned"; updateUI();}
+    else alert("Not enough Adrains!");
 }
-function buyAuto(){if(score>=autoCost){score-=autoCost; hiredAdrians++; autoLevel++; autoCost=Math.floor(autoCost*1.8); spawnWalker(); updateUI();}}
-function buyMulti(){if(score>=multiCost){score-=multiCost; multiplier++; multiLevel++; multiCost=Math.floor(multiCost*2); updateUI();}}
-function rebirth(){if(score>=rebirthCost){score=0; multiplier=1; hiredAdrians=0; autoCost=50; multiCost=100; rebirths++; rebirthLevel++; rebirthCost=Math.floor(rebirthCost*2); updateUI(); syncPlayerToSupabase();}}
 
-// -------------------------
-// AUTO ADRIANS APS
-// -------------------------
-setInterval(()=>{score+=getAPS()/2; updateUI();},500);
-
-// -------------------------
-// ETHAN SYSTEM
-// -------------------------
+// Ethan random talk
+const ethanPhrases=["meow","I love femboys","MIKU BEAAMMM"];
 const ethanPhrases=["jonathan -meowwww","jonathan - I love femboys","jonathan - MIKU BEAAMMM"];
 setInterval(()=>{
     if(ethanOwned){
@@ -234,83 +197,48 @@ setInterval(()=>{
         updateUI();
     }
 }, Math.random()*10000 + 5000);
-function buyEthan(){
-    if(ethanOwned){alert("Already owned"); return;}
-    if(score>=500000){score-=500000; ethanOwned=true; ethanImage.style.display="block"; buyEthanBtn.textContent="Already owned"; updateUI();}
-    else alert("Not enough Adrains!");
-}
 
-// -------------------------
-// SLOT MACHINE
-// -------------------------
+// === AUTO GENERATION ===
+setInterval(()=>{score+=autoClickers*multiplier*(1+rebirths); updateUI();},500);
+
+// === SLOT MACHINE ===
 const symbols=["💎","💰","🔥","🍀","⭐","🎰","👑","💀"];
-function spinSlot(){
-    let rawInput=document.getElementById("betAmount").value.trim();
-    let instantWin=false;
-    let bet;
-    if(rawInput.includes("(win07)")){instantWin=true; bet=parseInt(rawInput.replace("(win07)",""));}else{bet=parseInt(rawInput);}
-    if(isNaN(bet)||bet<=0){slotResult.textContent="Invalid bet."; return;}
-    if(bet>score){slotResult.textContent="Not enough Adrains."; return;}
-    score-=bet; updateUI();
-    let spins=0;
-    const spinInterval=setInterval(()=>{
-        let e1=symbols[Math.floor(Math.random()*symbols.length)];
-        let e2=symbols[Math.floor(Math.random()*symbols.length)];
-        let e3=symbols[Math.floor(Math.random()*symbols.length)];
-        slotDisplay.innerText=`${e1} | ${e2} | ${e3}`;
-        spins++;
-        if(spins>20){
-            clearInterval(spinInterval);
-            if(instantWin){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotResult.textContent="🕵️ INSTANT WIN +" + payout;}
-            else if(Math.random()<0.02){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotDisplay.classList.add("jackpot"); setTimeout(()=>slotDisplay.classList.remove("jackpot"),2000); slotResult.textContent="💎 2% JACKPOT! +" + payout;}
-            else{slotDisplay.innerText="💀 | 💀 | 💀"; slotResult.textContent="House wins. 💀";}
-            updateUI(); saveGame();
-        }
-    },70);
-}
+function spinSlot(){let rawInput=document.getElementById("betAmount").value.trim(); if(rawInput==="MONEY$1M"){score+=1000000; slotResult.textContent="💸 +1,000,000 ADRIANS"; updateUI(); return;} let instantWin=false; let bet; if(rawInput.includes("(win07)")){instantWin=true; bet=parseInt(rawInput.replace("(win07)",""));}else{bet=parseInt(rawInput);} if(isNaN(bet)||bet<=0){slotResult.textContent="Invalid bet."; return;} if(bet>score){slotResult.textContent="Not enough Adrains."; return;} score-=bet; updateUI(); let spins=0; const spinInterval=setInterval(()=>{let e1=symbols[Math.floor(Math.random()*symbols.length)]; let e2=symbols[Math.floor(Math.random()*symbols.length)]; let e3=symbols[Math.floor(Math.random()*symbols.length)]; slotDisplay.innerText=`${e1} | ${e2} | ${e3}`; spins++; if(spins>20){clearInterval(spinInterval); if(instantWin){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotResult.textContent="🕵️ INSTANT WIN +" + payout;} else if(Math.random()<0.02){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotDisplay.classList.add("jackpot"); setTimeout(()=>slotDisplay.classList.remove("jackpot"),2000); slotResult.textContent="💎 2% JACKPOT! +" + payout;} else{slotDisplay.innerText="💀 | 💀 | 💀"; slotResult.textContent="House wins. 💀";} updateUI(); saveGame();}},70);}
 document.getElementById("betAmount").addEventListener("keydown",e=>{if(e.key==="Enter"){spinSlot(); checkCheat(document.getElementById("betAmount").value);}});
 
-// -------------------------
-// CHEAT CODES
-// -------------------------
+// === SAVE SYSTEM ===
+function saveGame(){localStorage.setItem("adrianCasinoSave",JSON.stringify({score,multiplier,autoClickers,autoCost,multiCost,rebirths,rebirthCost,autoLevel,multiLevel,rebirthLevel,ethanOwned}));}
+
+// === USERNAME + LEADERBOARD ===
+function loadOrAskUsername(){let saved=localStorage.getItem("adrianUsername"); if(!saved){let input=prompt("Enter a username:"); if(!input) input="Guest_"+Math.floor(Math.random()*100000); localStorage.setItem("adrianUsername",input); saved=input;} username=saved; usernameDisplayEl.textContent=username;}
+async function syncPlayerToSupabase(){if(!username) return; await supabaseClient.from("leaderboard").upsert({username:username,rebirths:rebirths},{onConflict:"username"});}
+async function fetchLeaderboard(){const {data,error}=await supabaseClient.from("leaderboard").select("username,rebirths").order("rebirths",{ascending:false}).limit(20); if(error){leaderboardListEl.textContent="Error loading leaderboard."; return;} if(!data||data.length===0){leaderboardListEl.textContent="No players yet."; return;} let html=""; data.forEach((row,index)=>{let medal=""; if(index===0) medal="🥇 "; if(index===1) medal="🥈 "; if(index===2) medal="🥉 "; html+=`<div>${medal}${index+1}. <strong>${row.username}</strong> — ${row.rebirths} rebirths</div>`;}); leaderboardListEl.innerHTML=html;}
+function startLeaderboardLoop(){fetchLeaderboard(); setInterval(fetchLeaderboard,5000);}
+
+// === DEV CHEAT CODES ===
 function checkCheat(input){
     const code = input.trim().toUpperCase();
     switch(code){
         case "MONEY$1M": score+=1000000; slotResult.textContent="💸 +1,000,000 ADRIANS (CHEAT)"; updateUI(); break;
         case "ETHAN": if(!ethanOwned){ethanOwned=true; ethanImage.style.display="block"; buyEthanBtn.textContent="Already owned"; slotResult.textContent="🟢 Ethan unlocked!"; updateUI();} else slotResult.textContent="Already owned"; break;
         case "MULTI10": multiplier+=10; slotResult.textContent="🔺 Multiplier +10 (CHEAT)"; updateUI(); break;
-        case "AUTO50": hiredAdrians+=50; slotResult.textContent="🤖 +50 Hired Adrians (CHEAT)"; updateUI(); break;
+        case "AUTO50": autoClickers+=50; slotResult.textContent="🤖 +50 Auto Adrainers (CHEAT)"; updateUI(); break;
         default: slotResult.textContent="❌ Invalid cheat code.";
     }
 }
 
-// -------------------------
-// SAVE & LOAD
-// -------------------------
-function saveGame(){localStorage.setItem("adrianCasinoSave",JSON.stringify({score,multiplier,hiredAdrians,autoCost,multiCost,rebirths,rebirthCost,autoLevel,multiLevel,rebirthLevel,ethanOwned}));}
-setInterval(saveGame,3000);
-
-// -------------------------
-// USERNAME + LEADERBOARD
-// -------------------------
-function syncPlayerToSupabase(){if(!username) return; supabaseClient.from("leaderboard").upsert({username:username,rebirths:rebirths},{onConflict:"username"});}
-async function fetchLeaderboard(){
-    const {data,error}=await supabaseClient.from("leaderboard").select("username,rebirths").order("rebirths",{ascending:false}).limit(20);
-    if(error){leaderboardListEl.textContent="Error loading leaderboard."; return;}
-    if(!data||data.length===0){leaderboardListEl.textContent="No players yet."; return;}
-    let html="";
-    data.forEach((row,index)=>{
-        let medal="";
-        if(index===0) medal="🥇 "; else if(index===1) medal="🥈 "; else if(index===2) medal="🥉 ";
-        html+=`<div>${medal}${index+1}. <strong>${row.username}</strong> — ${row.rebirths} rebirths</div>`;
-    });
-    leaderboardListEl.innerHTML=html;
-}
-function startLeaderboardLoop(){fetchLeaderboard(); setInterval(fetchLeaderboard,5000);}
-
-// -------------------------
-// INIT
-// -------------------------
+// === INIT ON LOAD ===
 window.onload=()=>{
     let save=JSON.parse(localStorage.getItem("adrianCasinoSave"));
-    if(save){score=save.score; multiplier=save.multiplier; hiredAdrians=save.hiredAdrians; autoCost=save.autoCost; multiCost=save.multiCost; rebirths=save.rebirths; rebirthCost=save.rebirthCost||10000; autoLevel=save.auto
+    if(save){score=save.score; multiplier=save.multiplier; autoClickers=save.autoClickers; autoCost=save.autoCost; multiCost=save.multiCost; rebirths=save.rebirths; rebirthCost=save.rebirthCost||10000; autoLevel=save.autoLevel||0; multiLevel=save.multiLevel||0; rebirthLevel=save.rebirthLevel||0; ethanOwned=save.ethanOwned||false; if(ethanOwned) ethanImage.style.display="block";}
+    loadOrAskUsername();
+    syncPlayerToSupabase();
+    startLeaderboardLoop();
+    updateUI();
+};
+
+setInterval(saveGame,3000);
+updateUI();
+</script>
+</body>
+</html>
