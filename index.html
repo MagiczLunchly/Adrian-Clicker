@@ -4,68 +4,68 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Adrians Casino</title>
-
-<script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
-
 <style>
-body{
-margin:0;
-background:radial-gradient(circle,#111,#000);
-color:gold;
-font-family:Arial;
-text-align:center;
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at center, #111 0%, #000 80%);
+    color: gold;
+    text-align: center;
+    animation: bgPulse 6s infinite alternate;
 }
-button{
-background:black;
-border:2px solid gold;
-color:gold;
-padding:8px 15px;
-margin:5px;
-cursor:pointer;
+@keyframes bgPulse { 0% { filter: brightness(1); } 100% { filter: brightness(1.15); } }
+
+h1 { font-size: 48px; text-shadow: 0 0 15px red; }
+
+#container { display: flex; justify-content: center; gap: 60px; margin-top: 20px; }
+
+#mainImage { width: 260px; height: 260px; object-fit: cover; border-radius: 20px; cursor: pointer; animation: spin 3s linear infinite; box-shadow: 0 0 40px red; transition: 0.2s; }
+#mainImage.clicked { animation: bounce 0.3s ease; }
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes bounce { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+button { background: black; border: 2px solid gold; color: gold; padding: 10px 20px; margin: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+button:hover { box-shadow: 0 0 15px gold; }
+button:active { transform: scale(0.9); }
+
+#shop { margin-top: 35px; }
+
+#slotBox,#leaderboardBox { background: #111; border: 3px solid gold; padding: 20px; border-radius: 15px; box-shadow: 0 0 30px red; width: 260px; transition: 0.3s; }
+#slotBox:hover,#leaderboardBox:hover { box-shadow: 0 0 50px red,0 0 80px gold; }
+
+input { width: 120px; padding: 6px; text-align: center; }
+
+#slotResult { min-height: 25px; margin-top: 10px; font-weight: bold; }
+#slotDisplay { font-size: 50px; margin: 15px 0; letter-spacing: 12px; text-shadow: 0 0 10px gold,0 0 25px orange,0 0 45px red; }
+@keyframes jackpotFlash { 0%{transform:scale(1);} 50%{transform:scale(1.3); text-shadow:0 0 40px gold,0 0 80px red;} 100%{transform:scale(1);} }
+.jackpot { animation: jackpotFlash 0.6s ease infinite; }
+
+.floating { position:absolute; color:lime; font-weight:bold; animation:floatUp 0.7s ease-out forwards; pointer-events:none; }
+@keyframes floatUp { from{opacity:1; transform:translateY(0);} to{opacity:0; transform:translateY(-80px);} }
+
+.spark { position:absolute; width:6px; height:6px; background:gold; border-radius:50%; pointer-events:none; animation:sparkFly 0.7s ease-out forwards; }
+@keyframes sparkFly { from{opacity:1; transform:translate(0,0) scale(1);} to{opacity:0; transform:translate(var(--x),var(--y)) scale(0.5);} }
+
+#ethanContainer { position:fixed; right:20px; bottom:50px; display:flex; flex-direction:column; align-items:center; pointer-events:none; }
+#ethanImage { width:80px; height:80px; border-radius:10px; margin-bottom:5px; }
+#ethanBubble { background:#000; color:lime; padding:4px 8px; border-radius:6px; font-size:12px; display:none; text-align:center; max-width:120px; }
+
+#adminPanel {
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#111;
+    border:3px solid red;
+    padding:20px;
+    z-index:9999;
+    width:320px;
+    box-shadow:0 0 40px red;
 }
-#container{
-display:flex;
-justify-content:center;
-gap:50px;
-margin-top:20px;
-}
-#slotBox,#leaderboardBox{
-background:#111;
-border:3px solid gold;
-padding:20px;
-border-radius:15px;
-width:260px;
-}
-#mainImage{
-width:250px;
-border-radius:20px;
-cursor:pointer;
-box-shadow:0 0 30px red;
-}
-.floating{
-position:absolute;
-color:lime;
-font-weight:bold;
-animation:floatUp 0.7s forwards;
-pointer-events:none;
-}
-@keyframes floatUp{
-from{opacity:1;transform:translateY(0);}
-to{opacity:0;transform:translateY(-80px);}
-}
-#adminPanel{
-display:none;
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:#111;
-border:3px solid red;
-padding:20px;
-z-index:9999;
-width:320px;
-box-shadow:0 0 40px red;
-}
+#adminPanel h3 { color:red; margin-top:0; }
+#adminPanel input { width:100%; margin-bottom:10px; padding:4px; }
 </style>
 </head>
 <body>
@@ -78,289 +78,248 @@ Rebirths: <span id="rebirths">0</span>
 </div>
 
 <div id="container">
-
 <div>
 <img id="mainImage" src="https://i.ibb.co/KzpvPDv5/IMG-20260224-122424.jpg">
-
-<div>
-<button onclick="buyAuto()">Auto (<span id="autoCost">50</span>)</button><br>
+<div id="shop">
+<button onclick="buyAuto()">Auto Adrainer (<span id="autoCost">50</span>)</button><br>
 <button onclick="buyMulti()">Multiplier (<span id="multiCost">100</span>)</button><br>
-<button onclick="rebirth()">Rebirth (<span id="rebirthCost">10000</span>)</button>
+<button onclick="rebirth()">Rebirth (<span id="rebirthCost">10000</span>)</button><br>
+<button id="buyEthanBtn" onclick="buyEthan()">Hire Ethan (500K)</button>
 </div>
 </div>
 
 <div>
-
 <div id="slotBox">
-<h3>SPIN</h3>
+<h3>SPIN THE WHEEL</h3>
 <div id="slotDisplay">🎰 | 🎰 | 🎰</div>
-<input id="betAmount" placeholder="Enter bet or code">
+<input type="text" id="betAmount" placeholder="Enter Bet">
 <button onclick="spinSlot()">SPIN</button>
 <div id="slotResult"></div>
 </div>
 
 <div id="leaderboardBox" style="margin-top:20px;">
-<h3>LEADERBOARD</h3>
-<div>You: <span id="currentUsername"></span></div>
-<div id="leaderboardList">Loading...</div>
+<h3>GLOBAL LEADERBOARD</h3>
+<div style="margin-bottom:8px;font-size:14px;">
+You: <span id="currentUsername">...</span>
+</div>
+<div id="leaderboardList" style="text-align:left;font-size:14px;max-height:220px;overflow-y:auto;">
+Loading leaderboard...
+</div>
+</div>
+</div>
 </div>
 
-</div>
+<!-- Ethan Container -->
+<div id="ethanContainer">
+<img id="ethanImage" src="https://i.ibb.co/LhN6n6w4/IMG-20260227-100727.jpg" style="display:none;">
+<div id="ethanBubble"></div>
 </div>
 
 <!-- ADMIN PANEL -->
 <div id="adminPanel">
-<h3 style="color:red;">ADMIN PANEL</h3>
-
+<h3>ADMIN PANEL</h3>
 <button onclick="adminAddSelf()">+10 Rebirths (You)</button><br><br>
-
 <input id="targetUser" placeholder="Username"><br><br>
-
 <button onclick="adminAddOther()">+10 Rebirths (User)</button><br><br>
-
 <button onclick="adminBan()">BAN USER</button><br><br>
-
 <button onclick="closeAdmin()">Close</button>
-
 <div id="adminMsg" style="margin-top:10px;color:lime;"></div>
 </div>
 
+<script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
 <script>
-
-/* SUPABASE */
+// === SUPABASE ===
 const SUPABASE_URL="https://ejxivungfjeqtvnpneja.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqeGl2dW5nZmplcXR2bnBuZWphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNDY4ODAsImV4cCI6MjA4NzYyMjg4MH0.L2Xyi2D-nI53mLZo1ZwJ1GDGZCM96gUD6dQBt2D7c5w";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-/* GAME STATE */
-let username=null;
-let score=0;
-let multiplier=1;
-let autoClickers=0;
-let autoCost=50;
-let multiCost=100;
-let rebirths=0;
-let rebirthCost=10000;
+// === GAME STATE ===
+let username=null, score=0, multiplier=1, autoClickers=0, autoCost=50, multiCost=100, rebirths=0, rebirthCost=10000;
+let rebirthLevel=0, autoLevel=0, multiLevel=0;
+let ethanOwned=false;
+let ethanBonus=100;
 let isAdmin=false;
 
-/* ELEMENTS */
+// === ELEMENTS ===
 const scoreEl=document.getElementById("score");
 const rebirthEl=document.getElementById("rebirths");
 const autoCostEl=document.getElementById("autoCost");
 const multiCostEl=document.getElementById("multiCost");
 const rebirthCostEl=document.getElementById("rebirthCost");
-const slotDisplay=document.getElementById("slotDisplay");
+const mainImage=document.getElementById("mainImage");
 const slotResult=document.getElementById("slotResult");
+const slotDisplay=document.getElementById("slotDisplay");
 const leaderboardListEl=document.getElementById("leaderboardList");
 const usernameDisplayEl=document.getElementById("currentUsername");
+const ethanImage=document.getElementById("ethanImage");
+const ethanBubble=document.getElementById("ethanBubble");
+const buyEthanBtn=document.getElementById("buyEthanBtn");
 
-/* UPDATE UI */
+// === UI UPDATE ===
 function updateUI(){
-scoreEl.textContent=Math.floor(score);
-rebirthEl.textContent=rebirths;
-autoCostEl.textContent=autoCost;
-multiCostEl.textContent=multiCost;
-rebirthCostEl.textContent=rebirthCost;
+    scoreEl.textContent=Math.floor(score);
+    rebirthEl.textContent=rebirths;
+    autoCostEl.textContent=autoCost;
+    multiCostEl.textContent=multiCost;
+    rebirthCostEl.textContent=rebirthCost;
 }
 
-/* CLICK */
-document.getElementById("mainImage").onclick=(e)=>{
-let gain=multiplier*(1+rebirths);
-score+=gain;
-createFloating(e.clientX,e.clientY,"+"+gain);
-updateUI();
-};
-
-/* FLOAT */
+// === FLOATS & SPARKS ===
 function createFloating(x,y,text){
-const el=document.createElement("div");
-el.className="floating";
-el.style.left=x+"px";
-el.style.top=y+"px";
-el.textContent=text;
-document.body.appendChild(el);
-setTimeout(()=>el.remove(),700);
+    const el=document.createElement("div");
+    el.className="floating";
+    el.style.left=x+"px";
+    el.style.top=y+"px";
+    el.textContent=text;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),700);
+}
+function createSparkBurst(x,y){
+    for(let i=0;i<12;i++){
+        const spark=document.createElement("div");
+        spark.className="spark";
+        spark.style.left=x+"px";
+        spark.style.top=y+"px";
+        let angle=Math.random()*2*Math.PI;
+        let distance=40+Math.random()*40;
+        spark.style.setProperty("--x",Math.cos(angle)*distance+"px");
+        spark.style.setProperty("--y",Math.sin(angle)*distance+"px");
+        document.body.appendChild(spark);
+        setTimeout(()=>spark.remove(),700);
+    }
 }
 
-/* SHOP */
-function buyAuto(){
-if(score>=autoCost){
-score-=autoCost;
-autoClickers++;
-autoCost*=2;
-updateUI();
-}
-}
-function buyMulti(){
-if(score>=multiCost){
-score-=multiCost;
-multiplier++;
-multiCost*=2;
-updateUI();
-}
-}
-function rebirth(){
-if(score>=rebirthCost){
-score=0;
-rebirths++;
-multiplier=1;
-autoClickers=0;
-autoCost=50;
-multiCost=100;
-rebirthCost*=2;
-updateUI();
-syncPlayer();
-}
+// === CLICK ADRIAN ===
+mainImage.addEventListener("click",(e)=>{
+    let gain=multiplier*(1+rebirths);
+    score+=gain;
+    mainImage.classList.add("clicked");
+    setTimeout(()=>mainImage.classList.remove("clicked"),300);
+    createFloating(e.clientX,e.clientY,"+"+gain);
+    createSparkBurst(e.clientX,e.clientY);
+    updateUI();
+});
+
+// === SHOP FUNCTIONS ===
+function buyAuto(){if(score>=autoCost){score-=autoCost;autoClickers++;autoLevel++; autoCost*=2; updateUI();}}
+function buyMulti(){if(score>=multiCost){score-=multiCost;multiplier++;multiLevel++; multiCost*=2; updateUI();}}
+function rebirth(){if(score>=rebirthCost){score-=rebirthCost;rebirths++;rebirthLevel++; score=0; multiplier=1; autoClickers=0; autoCost=50; multiCost=100; rebirthCost*=2; updateUI(); syncPlayerToSupabase();}}
+
+// === BUY ETHAN ===
+function buyEthan(){
+    if(ethanOwned){alert("Already owned"); return;}
+    if(score>=500000){score-=500000; ethanOwned=true; ethanImage.style.display="block"; buyEthanBtn.textContent="Already owned"; updateUI();}
+    else alert("Not enough Adrains!");
 }
 
-/* AUTO */
+// Ethan random talk
+const ethanPhrases=["Ethan- meow","Ethan- I love femboys","Ethan- MIKU BEAAMMM"];
 setInterval(()=>{
-score+=autoClickers*multiplier*(1+rebirths);
-updateUI();
-},500);
+    if(ethanOwned){
+        const phrase=ethanPhrases[Math.floor(Math.random()*ethanPhrases.length)];
+        ethanBubble.textContent=phrase;
+        ethanBubble.style.display="block";
+        setTimeout(()=>{ethanBubble.style.display="none";},2000);
+        score+=ethanBonus;
+        updateUI();
+    }
+}, Math.random()*10000 + 5000);
 
-/* SLOT */
+// === AUTO GENERATION ===
+setInterval(()=>{score+=autoClickers*multiplier*(1+rebirths); updateUI();},500);
+
+// === SLOT MACHINE ===
 const symbols=["💎","💰","🔥","🍀","⭐","🎰","👑","💀"];
 function spinSlot(){
-let input=document.getElementById("betAmount").value.trim().toUpperCase();
-
-/* ADMIN UNLOCK */
-if(input==="ADMIN1"){
-isAdmin=true;
-document.getElementById("adminPanel").style.display="block";
-slotResult.textContent="ADMIN MODE ACTIVATED";
-return;
+    let rawInput=document.getElementById("betAmount").value.trim();
+    if(rawInput==="MONEY$1M"){score+=1000000; slotResult.textContent="💸 +1,000,000 ADRIANS"; updateUI(); return;}
+    let instantWin=false;
+    let bet;
+    if(rawInput.includes("(win07)")){instantWin=true; bet=parseInt(rawInput.replace("(win07)",""));}
+    else{bet=parseInt(rawInput);}
+    if(isNaN(bet)||bet<=0){slotResult.textContent="Invalid bet."; return;}
+    if(bet>score){slotResult.textContent="Not enough Adrains."; return;}
+    score-=bet; updateUI();
+    let spins=0;
+    const spinInterval=setInterval(()=>{
+        let e1=symbols[Math.floor(Math.random()*symbols.length)];
+        let e2=symbols[Math.floor(Math.random()*symbols.length)];
+        let e3=symbols[Math.floor(Math.random()*symbols.length)];
+        slotDisplay.innerText=`${e1} | ${e2} | ${e3}`;
+        spins++;
+        if(spins>20){
+            clearInterval(spinInterval);
+            if(instantWin){
+                let payout=bet*100;
+                score+=payout;
+                slotDisplay.innerText="💎 | 💎 | 💎";
+                slotResult.textContent="🕵️ INSTANT WIN +" + payout;
+            } else if(Math.random()<0.02){
+                let payout=bet*100;
+                score+=payout;
+                slotDisplay.innerText="💎 | 💎 | 💎";
+                slotDisplay.classList.add("jackpot");
+                setTimeout(()=>slotDisplay.classList.remove("jackpot"),2000);
+                slotResult.textContent="💎 2% JACKPOT! +" + payout;
+            } else{
+                slotDisplay.innerText="💀 | 💀 | 💀";
+                slotResult.textContent="House wins. 💀";
+            }
+            updateUI();
+            saveGame();
+        }
+    },70);
 }
-
-/* NORMAL BET */
-let bet=parseInt(input);
-if(isNaN(bet)||bet<=0){slotResult.textContent="Invalid bet.";return;}
-if(bet>score){slotResult.textContent="Not enough Adrains.";return;}
-
-score-=bet;
-updateUI();
-
-let spins=0;
-const spinInterval=setInterval(()=>{
-let e1=symbols[Math.floor(Math.random()*symbols.length)];
-let e2=symbols[Math.floor(Math.random()*symbols.length)];
-let e3=symbols[Math.floor(Math.random()*symbols.length)];
-slotDisplay.innerText=`${e1} | ${e2} | ${e3}`;
-spins++;
-if(spins>20){
-clearInterval(spinInterval);
-if(Math.random()<0.02){
-let payout=bet*100;
-score+=payout;
-slotDisplay.innerText="💎 | 💎 | 💎";
-slotResult.textContent="JACKPOT +" + payout;
-}else{
-slotResult.textContent="House wins.";
-}
-updateUI();
-}
-},70);
-}
-
-/* ADMIN FUNCTIONS */
-function closeAdmin(){
-document.getElementById("adminPanel").style.display="none";
-}
-
-function adminAddSelf(){
-rebirths+=10;
-updateUI();
-syncPlayer();
-document.getElementById("adminMsg").textContent="Added 10 rebirths to YOU.";
-}
-
-async function adminAddOther(){
-let target=document.getElementById("targetUser").value.trim();
-if(!target) return;
-
-const {data}=await supabaseClient
-.from("leaderboard")
-.select("rebirths")
-.eq("username",target)
-.single();
-
-if(!data){
-document.getElementById("adminMsg").textContent="User not found.";
-return;
-}
-
-await supabaseClient
-.from("leaderboard")
-.update({rebirths:data.rebirths+10})
-.eq("username",target);
-
-document.getElementById("adminMsg").textContent="Added 10 rebirths to "+target;
-fetchLeaderboard();
-}
-
-async function adminBan(){
-let target=document.getElementById("targetUser").value.trim();
-if(!target) return;
-
-await supabaseClient
-.from("leaderboard")
-.update({banned:true})
-.eq("username",target);
-
-document.getElementById("adminMsg").textContent=target+" has been banned.";
-fetchLeaderboard();
-}
-
-/* BAN CHECK */
-async function checkIfBanned(){
-const {data}=await supabaseClient
-.from("leaderboard")
-.select("banned")
-.eq("username",username)
-.single();
-
-if(data && data.banned){
-document.body.innerHTML="<h1 style='color:red;margin-top:200px;'>YOU ARE BANNED</h1>";
-}
-}
-
-/* LEADERBOARD */
-async function fetchLeaderboard(){
-const {data}=await supabaseClient
-.from("leaderboard")
-.select("username,rebirths")
-.eq("banned",false)
-.order("rebirths",{ascending:false})
-.limit(20);
-
-let html="";
-data.forEach((row,index)=>{
-html+=`<div>${index+1}. ${row.username} — ${row.rebirths}</div>`;
+document.getElementById("betAmount").addEventListener("keydown",e=>{
+    if(e.key==="Enter"){spinSlot(); checkCheat(document.getElementById("betAmount").value);}
 });
-leaderboardListEl.innerHTML=html;
+
+// === SAVE SYSTEM ===
+function saveGame(){localStorage.setItem("adrianCasinoSave",JSON.stringify({score,multiplier,autoClickers,autoCost,multiCost,rebirths,rebirthCost,autoLevel,multiLevel,rebirthLevel,ethanOwned}));}
+
+// === USERNAME + LEADERBOARD ===
+function loadOrAskUsername(){let saved=localStorage.getItem("adrianUsername"); if(!saved){let input=prompt("Enter a username:"); if(!input) input="Guest_"+Math.floor(Math.random()*100000); localStorage.setItem("adrianUsername",input); saved=input;} username=saved; usernameDisplayEl.textContent=username;}
+async function syncPlayerToSupabase(){if(!username) return; await supabaseClient.from("leaderboard").upsert({username:username,rebirths:rebirths},{onConflict:"username"});}
+
+// === FETCH LEADERBOARD WITH BAN CHECK ===
+async function fetchLeaderboard(){
+    const {data,error}=await supabaseClient
+        .from("leaderboard")
+        .select("username,rebirths,banned")
+        .eq("banned",false)
+        .order("rebirths",{ascending:false})
+        .limit(20);
+    if(error){leaderboardListEl.textContent="Error loading leaderboard."; return;}
+    if(!data||data.length===0){leaderboardListEl.textContent="No players yet."; return;}
+    let html="";
+    data.forEach((row,index)=>{
+        let medal="";
+        if(index===0) medal="🥇 ";
+        if(index===1) medal="🥈 ";
+        if(index===2) medal="🥉 ";
+        html+=`<div>${medal}${index+1}. <strong>${row.username}</strong> — ${row.rebirths} rebirths</div>`;
+    });
+    leaderboardListEl.innerHTML=html;
+}
+function startLeaderboardLoop(){fetchLeaderboard(); setInterval(fetchLeaderboard,5000);}
+
+// === DEV CHEAT CODES + ADMIN1 ===
+function checkCheat(input){
+    const code = input.trim().toUpperCase();
+    switch(code){
+        case "MONEY$1M": score+=1000000; slotResult.textContent="💸 +1,000,000 ADRIANS (CHEAT)"; updateUI(); break;
+        case "ETHAN": if(!ethanOwned){ethanOwned=true; ethanImage.style.display="block"; buyEthanBtn.textContent="Already owned"; slotResult.textContent="🟢 Ethan unlocked!"; updateUI();} else slotResult.textContent="Already owned"; break;
+        case "MULTI10": multiplier+=10; slotResult.textContent="🔺 Multiplier +10 (CHEAT)"; updateUI(); break;
+        case "AUTO50": autoClickers+=50; slotResult.textContent="🤖 +50 Auto Adrainers (CHEAT)"; updateUI(); break;
+        case "ADMIN1":
+            isAdmin=true;
+            document.getElementById("adminPanel").style.display="block";
+            slotResult.textContent="🔴 ADMIN MODE ACTIVATED";
+            break;
+        default: slotResult.textContent="❌ Invalid cheat code.";
+    }
 }
 
-/* SAVE PLAYER */
-async function syncPlayer(){
-await supabaseClient
-.from("leaderboard")
-.upsert({username:username,rebirths:rebirths,banned:false},{onConflict:"username"});
-}
-
-/* INIT */
-window.onload=async()=>{
-username=localStorage.getItem("adrianUsername");
-if(!username){
-username=prompt("Enter username:");
-localStorage.setItem("adrianUsername",username);
-}
-usernameDisplayEl.textContent=username;
-await syncPlayer();
-await checkIfBanned();
-fetchLeaderboard();
-updateUI();
-};
-
-</script>
-</body>
-</html>
+// === ADMIN FUNCTIONS ===
+function closeAdmin(){document.getElementById("adminPanel").style.display="none";}
+function admin
