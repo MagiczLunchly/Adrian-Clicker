@@ -179,6 +179,14 @@ Loading leaderboard...
     <button id="achievementsClose" onclick="toggleAchievementsMenu()">Close</button>
 </div>
 
+<!-- GOLDEN COOKIE STYLE BOOST POPUP -->
+<img id="goldBoostImg" 
+     src="https://i.ibb.co/mVVTsZhd/IMG-0853.jpg" 
+     style="position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+            width:220px; height:auto; border-radius:20px; border:3px solid gold;
+            box-shadow:0 0 40px gold,0 0 80px orange; cursor:pointer;
+            display:none; z-index:50;">
+
 <script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
 <script>
 // === SUPABASE ===
@@ -195,6 +203,13 @@ let ethanBonus=100;
 // Achievements state
 let achScore100kUnlocked=false;
 let achRebirth900Unlocked=false;
+
+// Golden cookie style boost state
+let boostActive = false;
+let originalMultiplier = 1;
+let boostTimeoutId = null;
+let boostScheduleTimeoutId = null;
+let goldCookieVisibleTimeoutId = null;
 
 // === ELEMENTS ===
 const scoreEl=document.getElementById("score");
@@ -217,6 +232,10 @@ const achievementsMenu=document.getElementById("achievementsMenu");
 const achScore100kEl=document.getElementById("achScore100k");
 const achRebirth900El=document.getElementById("achRebirth900");
 
+// Golden cookie elements
+const goldBoostImg = document.getElementById("goldBoostImg");
+const originalBodyBackground = document.body.style.background;
+
 // === ACHIEVEMENTS MENU TOGGLE ===
 function toggleAchievementsMenu(){
     const isOpen = achievementsMenu.style.display === "block";
@@ -231,14 +250,12 @@ function toggleAchievementsMenu(){
 
 // === ACHIEVEMENTS CHECK ===
 function updateAchievements(){
-    // 100K Adrains achievement
     if(!achScore100kUnlocked && score >= 100000){
         achScore100kUnlocked = true;
         achScore100kEl.classList.remove("locked");
         achScore100kEl.classList.add("unlocked");
         achScore100kEl.querySelector(".status").textContent = "Unlocked!";
     }
-    // 900 Rebirths achievement
     if(!achRebirth900Unlocked && rebirths >= 900){
         achRebirth900Unlocked = true;
         achRebirth900El.classList.remove("locked");
@@ -246,6 +263,62 @@ function updateAchievements(){
         achRebirth900El.querySelector(".status").textContent = "Unlocked!";
     }
 }
+
+// === GOLDEN COOKIE STYLE BOOST ===
+// Start 10x buff for 60s
+function startGoldBoost() {
+    if (boostActive) return;
+
+    boostActive = true;
+    originalMultiplier = multiplier;
+    multiplier *= 10;
+
+    document.body.style.background =
+        "radial-gradient(circle at center, gold 0%, #b8860b 80%)";
+
+    if (boostTimeoutId) clearTimeout(boostTimeoutId);
+    boostTimeoutId = setTimeout(endGoldBoost, 60000); // 1 minute effect
+}
+
+// End buff, restore background, schedule next cookie
+function endGoldBoost() {
+    if (!boostActive) return;
+    boostActive = false;
+
+    multiplier = originalMultiplier;
+    document.body.style.background =
+        originalBodyBackground || "radial-gradient(circle at center, #111 0%, #000 80%)";
+
+    scheduleNextGoldBoost();
+}
+
+// Random spawn 1–10 minutes after last cookie is gone/clicked
+function scheduleNextGoldBoost() {
+    if (boostScheduleTimeoutId) clearTimeout(boostScheduleTimeoutId);
+    const minMs = 1 * 60 * 1000;   // 1 minute
+    const maxMs = 10 * 60 * 1000;  // 10 minutes
+    const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+
+    boostScheduleTimeoutId = setTimeout(() => {
+        goldBoostImg.style.display = "block";
+
+        // Cookie only stays on screen for 10s
+        if (goldCookieVisibleTimeoutId) clearTimeout(goldCookieVisibleTimeoutId);
+        goldCookieVisibleTimeoutId = setTimeout(() => {
+            if (goldBoostImg.style.display === "block") {
+                goldBoostImg.style.display = "none";
+                scheduleNextGoldBoost();
+            }
+        }, 10000); // visible for 10s
+    }, delay);
+}
+
+// Click on golden cookie
+goldBoostImg.addEventListener("click", () => {
+    if (goldCookieVisibleTimeoutId) clearTimeout(goldCookieVisibleTimeoutId);
+    goldBoostImg.style.display = "none";
+    startGoldBoost();
+});
 
 // === UI UPDATE ===
 function updateUI(){
@@ -380,12 +453,10 @@ window.onload=()=>{
         ethanOwned=save.ethanOwned||false;
         if(ethanOwned) ethanImage.style.display="block";
 
-        // Load achievements from save
         achScore100kUnlocked = !!save.achScore100kUnlocked;
         achRebirth900Unlocked = !!save.achRebirth900Unlocked;
     }
 
-    // Reflect loaded achievements in UI
     if(achScore100kUnlocked){
         achScore100kEl.classList.remove("locked");
         achScore100kEl.classList.add("unlocked");
@@ -401,6 +472,7 @@ window.onload=()=>{
     syncPlayerToSupabase();
     startLeaderboardLoop();
     updateUI();
+    scheduleNextGoldBoost();
 };
 
 setInterval(saveGame,3000);
@@ -408,3 +480,4 @@ updateUI();
 </script>
 </body>
 </html>
+
