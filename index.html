@@ -112,6 +112,14 @@ input { width: 120px; padding: 6px; text-align: center; }
     display: none;
     z-index: 25;
 }
+
+/* ADMIN UI */
+#adminOpenBtn {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    z-index: 20;
+}
 </style>
 </head>
 <body>
@@ -124,41 +132,41 @@ Rebirths: <span id="rebirths">0</span>
 </div>
 
 <div id="container">
-<div>
-<img id="mainImage" src="https://i.ibb.co/KzpvPDv5/IMG-20260224-122424.jpg">
-<div id="shop">
-<button onclick="buyAuto()">Auto Adrainer (<span id="autoCost">50</span>)</button><br>
-<button onclick="buyMulti()">Multiplier (<span id="multiCost">100</span>)</button><br>
-<button onclick="rebirth()">Rebirth (<span id="rebirthCost">10000</span>)</button><br>
-<button id="buyEthanBtn" onclick="buyEthan()">Hire Ethan (500K)</button>
-</div>
-</div>
+  <div>
+    <img id="mainImage" src="https://i.ibb.co/KzpvPDv5/IMG-20260224-122424.jpg">
+    <div id="shop">
+      <button onclick="buyAuto()">Auto Adrainer (<span id="autoCost">50</span>)</button><br>
+      <button onclick="buyMulti()">Multiplier (<span id="multiCost">100</span>)</button><br>
+      <button onclick="rebirth()">Rebirth (<span id="rebirthCost">10000</span>)</button><br>
+      <button id="buyEthanBtn" onclick="buyEthan()">Hire Ethan (500K)</button>
+    </div>
+  </div>
 
-<div>
-<div id="slotBox">
-<h3>SPIN THE WHEEL</h3>
-<div id="slotDisplay">🎰 | 🎰 | 🎰</div>
-<input type="text" id="betAmount" placeholder="Enter Bet">
-<button onclick="spinSlot()">SPIN</button>
-<div id="slotResult"></div>
-</div>
+  <div>
+    <div id="slotBox">
+      <h3>SPIN THE WHEEL</h3>
+      <div id="slotDisplay">🎰 | 🎰 | 🎰</div>
+      <input type="text" id="betAmount" placeholder="Enter Bet">
+      <button onclick="spinSlot()">SPIN</button>
+      <div id="slotResult"></div>
+    </div>
 
-<div id="leaderboardBox" style="margin-top:20px;">
-<h3>GLOBAL LEADERBOARD</h3>
-<div style="margin-bottom:8px;font-size:14px;">
-You: <span id="currentUsername">...</span>
-</div>
-<div id="leaderboardList" style="text-align:left;font-size:14px;max-height:220px;overflow-y:auto;">
-Loading leaderboard...
-</div>
-</div>
-</div>
+    <div id="leaderboardBox" style="margin-top:20px;">
+      <h3>GLOBAL LEADERBOARD</h3>
+      <div style="margin-bottom:8px;font-size:14px;">
+        You: <span id="currentUsername">...</span>
+      </div>
+      <div id="leaderboardList" style="text-align:left;font-size:14px;max-height:220px;overflow-y:auto;">
+        Loading leaderboard...
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Ethan Container -->
 <div id="ethanContainer">
-<img id="ethanImage" src="https://i.ibb.co/LhN6n6w4/IMG-20260227-100727.jpg" style="display:none;">
-<div id="ethanBubble"></div>
+  <img id="ethanImage" src="https://i.ibb.co/LhN6n6w4/IMG-20260227-100727.jpg" style="display:none;">
+  <div id="ethanBubble"></div>
 </div>
 
 <!-- ACHIEVEMENTS BUTTON -->
@@ -167,16 +175,16 @@ Loading leaderboard...
 <!-- ACHIEVEMENTS OVERLAY + MENU -->
 <div id="achievementsOverlay" onclick="toggleAchievementsMenu()"></div>
 <div id="achievementsMenu">
-    <h2>Achievements</h2>
-    <div class="achievement locked" id="achScore100k">
-        100K Adrains
-        <span class="status">Locked</span>
-    </div>
-    <div class="achievement locked" id="achRebirth900">
-        900 Rebirths
-        <span class="status">Locked</span>
-    </div>
-    <button id="achievementsClose" onclick="toggleAchievementsMenu()">Close</button>
+  <h2>Achievements</h2>
+  <div class="achievement locked" id="achScore100k">
+    100K Adrains
+    <span class="status">Locked</span>
+  </div>
+  <div class="achievement locked" id="achRebirth900">
+    900 Rebirths
+    <span class="status">Locked</span>
+  </div>
+  <button id="achievementsClose" onclick="toggleAchievementsMenu()">Close</button>
 </div>
 
 <!-- GOLDEN COOKIE STYLE BOOST POPUP -->
@@ -186,6 +194,59 @@ Loading leaderboard...
             width:220px; height:auto; border-radius:20px; border:3px solid gold;
             box-shadow:0 0 40px gold,0 0 80px orange; cursor:pointer;
             display:none; z-index:50;">
+
+<!-- ADMIN BUTTON -->
+<button id="adminOpenBtn">Admin</button>
+
+<!-- ADMIN OVERLAY -->
+<div id="adminOverlay" style="display:none;
+    position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:40;"></div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none;
+    position:fixed; left:50%; top:50%; transform:translate(-50%, -50%);
+    background:#111; border:3px solid gold; border-radius:15px;
+    padding:15px 20px; width:320px; max-width:90%; z-index:50;">
+  <h3>Admin Panel</h3>
+
+  <div id="adminLoginSection">
+    <input type="password" id="adminPasswordInput"
+           placeholder="Admin password"
+           style="width:100%; margin-bottom:8px;">
+    <button onclick="adminLogin()">Login</button>
+    <div id="adminLoginMsg" style="color:red; font-size:12px; min-height:16px;"></div>
+  </div>
+
+  <div id="adminControls" style="display:none; font-size:14px;">
+    <p>Logged in as admin</p>
+
+    <!-- Rebirth tools -->
+    <div style="margin-bottom:10px; border-top:1px solid #444; padding-top:8px;">
+      <strong>Rebirth tools (leaderboard)</strong><br>
+      <input type="text" id="adminTargetUser" placeholder="Username"
+             style="width:100%; margin:4px 0;">
+      <input type="number" id="adminRebirthAmount" placeholder="Amount (+/- or exact)"
+             style="width:100%; margin:4px 0;">
+      <button onclick="adminAddRebirths()">Add rebirths</button>
+      <button onclick="adminSetRebirths()">Set exact rebirths</button>
+      <div id="adminRebirthMsg" style="font-size:12px; min-height:14px;"></div>
+    </div>
+
+    <!-- Ban menu (local + hardcoded) -->
+    <div style="margin-bottom:10px; border-top:1px solid #444; padding-top:8px;">
+      <strong>Ban user (local)</strong><br>
+      <input type="text" id="adminBanUser" placeholder="Username to ban"
+             style="width:100%; margin:4px 0;">
+      <button onclick="adminBanUserFunc()">Ban</button>
+      <button onclick="adminUnbanUserFunc()">Unban</button>
+      <div id="adminBanMsg" style="font-size:12px; min-height:14px;"></div>
+    </div>
+
+    <button onclick="adminLogout()">Log out</button>
+  </div>
+
+  <button style="margin-top:10px; width:100%;" onclick="closeAdminPanel()">Close</button>
+</div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
 <script>
@@ -211,6 +272,14 @@ let boostTimeoutId = null;
 let boostScheduleTimeoutId = null;
 let goldCookieVisibleTimeoutId = null;
 
+// Admin stuff (local / not secure)
+const ADMIN_PASSWORD = "1ADMIN";
+let adminLoggedIn = false;
+let bannedUsers = [];
+
+// Hard-coded banned usernames (edit this list if you want)
+const hardcodedBannedUsers = ["BadGuy123", "TrollName"];
+
 // === ELEMENTS ===
 const scoreEl=document.getElementById("score");
 const rebirthEl=document.getElementById("rebirths");
@@ -235,6 +304,31 @@ const achRebirth900El=document.getElementById("achRebirth900");
 // Golden cookie elements
 const goldBoostImg = document.getElementById("goldBoostImg");
 const originalBodyBackground = document.body.style.background;
+
+// Admin elements
+const adminOpenBtn = document.getElementById("adminOpenBtn");
+const adminOverlay = document.getElementById("adminOverlay");
+const adminPanel = document.getElementById("adminPanel");
+
+// === BAN LIST LOCAL STORAGE ===
+function loadBanList(){
+    const stored = localStorage.getItem("adrianBannedUsers");
+    if(stored){
+        try { bannedUsers = JSON.parse(stored); }
+        catch(e){ bannedUsers = []; }
+    } else {
+        bannedUsers = [];
+    }
+}
+
+function saveBanList(){
+    localStorage.setItem("adrianBannedUsers", JSON.stringify(bannedUsers));
+}
+
+function isUserBanned(name){
+    if(!name) return false;
+    return hardcodedBannedUsers.includes(name) || bannedUsers.includes(name);
+}
 
 // === ACHIEVEMENTS MENU TOGGLE ===
 function toggleAchievementsMenu(){
@@ -265,55 +359,44 @@ function updateAchievements(){
 }
 
 // === GOLDEN COOKIE STYLE BOOST ===
-// Start 10x buff for 60s
 function startGoldBoost() {
     if (boostActive) return;
-
     boostActive = true;
     originalMultiplier = multiplier;
     multiplier *= 10;
-
     document.body.style.background =
         "radial-gradient(circle at center, gold 0%, #b8860b 80%)";
-
     if (boostTimeoutId) clearTimeout(boostTimeoutId);
-    boostTimeoutId = setTimeout(endGoldBoost, 60000); // 1 minute effect
+    boostTimeoutId = setTimeout(endGoldBoost, 60000); // 1 minute
 }
 
-// End buff, restore background, schedule next cookie
 function endGoldBoost() {
     if (!boostActive) return;
     boostActive = false;
-
     multiplier = originalMultiplier;
     document.body.style.background =
         originalBodyBackground || "radial-gradient(circle at center, #111 0%, #000 80%)";
-
     scheduleNextGoldBoost();
 }
 
-// Random spawn 1–10 minutes after last cookie is gone/clicked
 function scheduleNextGoldBoost() {
     if (boostScheduleTimeoutId) clearTimeout(boostScheduleTimeoutId);
-    const minMs = 1 * 60 * 1000;   // 1 minute
-    const maxMs = 10 * 60 * 1000;  // 10 minutes
+    const minMs = 1 * 60 * 1000;
+    const maxMs = 10 * 60 * 1000;
     const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
 
     boostScheduleTimeoutId = setTimeout(() => {
         goldBoostImg.style.display = "block";
-
-        // Cookie only stays on screen for 10s
         if (goldCookieVisibleTimeoutId) clearTimeout(goldCookieVisibleTimeoutId);
         goldCookieVisibleTimeoutId = setTimeout(() => {
             if (goldBoostImg.style.display === "block") {
                 goldBoostImg.style.display = "none";
                 scheduleNextGoldBoost();
             }
-        }, 10000); // visible for 10s
+        }, 10000); // visible 10s
     }, delay);
 }
 
-// Click on golden cookie
 goldBoostImg.addEventListener("click", () => {
     if (goldCookieVisibleTimeoutId) clearTimeout(goldCookieVisibleTimeoutId);
     goldBoostImg.style.display = "none";
@@ -357,6 +440,7 @@ function createSparkBurst(x,y){
 
 // === CLICK ADRIAN ===
 mainImage.addEventListener("click",(e)=>{
+    if(isUserBanned(username)) return;
     let gain=multiplier*(1+rebirths);
     score+=gain;
     mainImage.classList.add("clicked");
@@ -367,9 +451,9 @@ mainImage.addEventListener("click",(e)=>{
 });
 
 // === SHOP FUNCTIONS ===
-function buyAuto(){if(score>=autoCost){score-=autoCost;autoClickers++;autoLevel++; autoCost*=2; updateUI();}}
-function buyMulti(){if(score>=multiCost){score-=multiCost;multiplier++;multiLevel++; multiCost*=2; updateUI();}}
-function rebirth(){if(score>=rebirthCost){score-=rebirthCost;rebirths++;rebirthLevel++; score=0; multiplier=1; autoClickers=0; autoCost=50; multiCost=100; rebirthCost*=2; updateUI(); syncPlayerToSupabase();}}
+function buyAuto(){if(score>=autoCost && !isUserBanned(username)){score-=autoCost;autoClickers++;autoLevel++; autoCost*=2; updateUI();}}
+function buyMulti(){if(score>=multiCost && !isUserBanned(username)){score-=multiCost;multiplier++;multiLevel++; multiCost*=2; updateUI();}}
+function rebirth(){if(score>=rebirthCost && !isUserBanned(username)){score-=rebirthCost;rebirths++;rebirthLevel++; score=0; multiplier=1; autoClickers=0; autoCost=50; multiCost=100; rebirthCost*=2; updateUI(); syncPlayerToSupabase();}}
 
 // === BUY ETHAN ===
 function buyEthan(){
@@ -381,7 +465,7 @@ function buyEthan(){
 // Ethan random talk
 const ethanPhrases=["Ethan- meow","Ethan- I love femboys","Ethan- MIKU BEAAMMM"];
 setInterval(()=>{
-    if(ethanOwned){
+    if(ethanOwned && !isUserBanned(username)){
         const phrase=ethanPhrases[Math.floor(Math.random()*ethanPhrases.length)];
         ethanBubble.textContent=phrase;
         ethanBubble.style.display="block";
@@ -392,11 +476,45 @@ setInterval(()=>{
 }, Math.random()*10000 + 5000);
 
 // === AUTO GENERATION ===
-setInterval(()=>{score+=autoClickers*multiplier*(1+rebirths); updateUI();},500);
+setInterval(()=>{
+    if(!isUserBanned(username)){
+        score+=autoClickers*multiplier*(1+rebirths);
+        updateUI();
+    }
+},500);
 
 // === SLOT MACHINE ===
 const symbols=["💎","💰","🔥","🍀","⭐","🎰","👑","💀"];
-function spinSlot(){let rawInput=document.getElementById("betAmount").value.trim(); if(rawInput==="MONEY$1M"){score+=1000000; slotResult.textContent="💸 +1,000,000 ADRIANS"; updateUI(); return;} let instantWin=false; let bet; if(rawInput.includes("(win07)")){instantWin=true; bet=parseInt(rawInput.replace("(win07)",""));}else{bet=parseInt(rawInput);} if(isNaN(bet)||bet<=0){slotResult.textContent="Invalid bet."; return;} if(bet>score){slotResult.textContent="Not enough Adrains."; return;} score-=bet; updateUI(); let spins=0; const spinInterval=setInterval(()=>{let e1=symbols[Math.floor(Math.random()*symbols.length)]; let e2=symbols[Math.floor(Math.random()*symbols.length)]; let e3=symbols[Math.floor(Math.random()*symbols.length)]; slotDisplay.innerText=`${e1} | ${e2} | ${e3}`; spins++; if(spins>20){clearInterval(spinInterval); if(instantWin){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotResult.textContent="🕵️ INSTANT WIN +" + payout;} else if(Math.random()<0.02){let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotDisplay.classList.add("jackpot"); setTimeout(()=>slotDisplay.classList.remove("jackpot"),2000); slotResult.textContent="💎 2% JACKPOT! +" + payout;} else{slotDisplay.innerText="💀 | 💀 | 💀"; slotResult.textContent="House wins. 💀";} updateUI(); saveGame();}},70);}
+function spinSlot(){
+    if(isUserBanned(username)) return;
+    let rawInput=document.getElementById("betAmount").value.trim();
+    if(rawInput==="MONEY$1M"){score+=1000000; slotResult.textContent="💸 +1,000,000 ADRIANS"; updateUI(); return;}
+    let instantWin=false; let bet;
+    if(rawInput.includes("(win07)")){instantWin=true; bet=parseInt(rawInput.replace("(win07)",""));}else{bet=parseInt(rawInput);}
+    if(isNaN(bet)||bet<=0){slotResult.textContent="Invalid bet."; return;}
+    if(bet>score){slotResult.textContent="Not enough Adrains."; return;}
+    score-=bet; updateUI();
+    let spins=0;
+    const spinInterval=setInterval(()=>{
+        let e1=symbols[Math.floor(Math.random()*symbols.length)];
+        let e2=symbols[Math.floor(Math.random()*symbols.length)];
+        let e3=symbols[Math.floor(Math.random()*symbols.length)];
+        slotDisplay.innerText=`${e1} | ${e2} | ${e3}`;
+        spins++;
+        if(spins>20){
+            clearInterval(spinInterval);
+            if(instantWin){
+                let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotResult.textContent="🕵️ INSTANT WIN +" + payout;
+            } else if(Math.random()<0.02){
+                let payout=bet*100; score+=payout; slotDisplay.innerText="💎 | 💎 | 💎"; slotDisplay.classList.add("jackpot"); setTimeout(()=>slotDisplay.classList.remove("jackpot"),2000); slotResult.textContent="💎 2% JACKPOT! +" + payout;
+            } else{
+                slotDisplay.innerText="💀 | 💀 | 💀"; slotResult.textContent="House wins. 💀";
+            }
+            updateUI();
+            saveGame();
+        }
+    },70);
+}
 document.getElementById("betAmount").addEventListener("keydown",e=>{if(e.key==="Enter"){spinSlot(); checkCheat(document.getElementById("betAmount").value);}});
 
 // === SAVE SYSTEM ===
@@ -419,10 +537,54 @@ function saveGame(){
 }
 
 // === USERNAME + LEADERBOARD ===
-function loadOrAskUsername(){let saved=localStorage.getItem("adrianUsername"); if(!saved){let input=prompt("Enter a username:"); if(!input) input="Guest_"+Math.floor(Math.random()*100000); localStorage.setItem("adrianUsername",input); saved=input;} username=saved; usernameDisplayEl.textContent=username;}
-async function syncPlayerToSupabase(){if(!username) return; await supabaseClient.from("leaderboard").upsert({username:username,rebirths:rebirths},{onConflict:"username"});}
-async function fetchLeaderboard(){const {data,error}=await supabaseClient.from("leaderboard").select("username,rebirths").order("rebirths",{ascending:false}).limit(20); if(error){leaderboardListEl.textContent="Error loading leaderboard."; return;} if(!data||data.length===0){leaderboardListEl.textContent="No players yet."; return;} let html=""; data.forEach((row,index)=>{let medal=""; if(index===0) medal="🥇 "; if(index===1) medal="🥈 "; if(index===2) medal="🥉 "; html+=`<div>${medal}${index+1}. <strong>${row.username}</strong> — ${row.rebirths} rebirths</div>`;}); leaderboardListEl.innerHTML=html;}
-function startLeaderboardLoop(){fetchLeaderboard(); setInterval(fetchLeaderboard,5000);}
+function loadOrAskUsername(){
+    let saved=localStorage.getItem("adrianUsername");
+    if(!saved){
+        let input=prompt("Enter a username:");
+        if(!input) input="Guest_"+Math.floor(Math.random()*100000);
+        localStorage.setItem("adrianUsername",input);
+        saved=input;
+    }
+    username=saved;
+    usernameDisplayEl.textContent=username;
+}
+
+async function syncPlayerToSupabase(){
+    if(!username) return;
+    await supabaseClient.from("leaderboard").upsert(
+        {username:username,rebirths:rebirths},
+        {onConflict:"username"}
+    );
+}
+
+async function fetchLeaderboard(){
+    const {data,error}=await supabaseClient
+        .from("leaderboard")
+        .select("username,rebirths")
+        .order("rebirths",{ascending:false})
+        .limit(20);
+    if(error){
+        leaderboardListEl.textContent="Error loading leaderboard.";
+        return;
+    }
+    if(!data||data.length===0){
+        leaderboardListEl.textContent="No players yet.";
+        return;
+    }
+    let html="";
+    data.forEach((row,index)=>{
+        let medal="";
+        if(index===0) medal="🥇 ";
+        if(index===1) medal="🥈 ";
+        if(index===2) medal="🥉 ";
+        html+=`<div>${medal}${index+1}. <strong>${row.username}</strong> — ${row.rebirths} rebirths</div>`;
+    });
+    leaderboardListEl.innerHTML=html;
+}
+function startLeaderboardLoop(){
+    fetchLeaderboard();
+    setInterval(fetchLeaderboard,5000);
+}
 
 // === DEV CHEAT CODES ===
 function checkCheat(input){
@@ -434,6 +596,177 @@ function checkCheat(input){
         case "AUTO50": autoClickers+=50; slotResult.textContent="🤖 +50 Auto Adrainers (CHEAT)"; updateUI(); break;
         default: slotResult.textContent="❌ Invalid cheat code.";
     }
+}
+
+// === ADMIN PANEL LOGIC ===
+adminOpenBtn.onclick = () => {
+    adminOverlay.style.display = "block";
+    adminPanel.style.display = "block";
+};
+
+function closeAdminPanel(){
+    adminOverlay.style.display = "none";
+    adminPanel.style.display = "none";
+}
+
+function adminLogin(){
+    const input = document.getElementById("adminPasswordInput").value;
+    const msgEl = document.getElementById("adminLoginMsg");
+    const loginSection = document.getElementById("adminLoginSection");
+    const controls = document.getElementById("adminControls");
+
+    if(input === ADMIN_PASSWORD){
+        adminLoggedIn = true;
+        msgEl.style.color = "lime";
+        msgEl.textContent = "Access granted.";
+        loginSection.style.display = "none";
+        controls.style.display = "block";
+    } else {
+        adminLoggedIn = false;
+        msgEl.style.color = "red";
+        msgEl.textContent = "Wrong password.";
+    }
+}
+
+function adminLogout(){
+    adminLoggedIn = false;
+    document.getElementById("adminPasswordInput").value = "";
+    document.getElementById("adminLoginSection").style.display = "block";
+    document.getElementById("adminControls").style.display = "none";
+    document.getElementById("adminLoginMsg").textContent = "";
+}
+
+// === ADMIN REBIRTH TOOLS (LEADERBOARD) ===
+async function adminUpdateRebirths(usernameTarget, newValue){
+    const msgEl = document.getElementById("adminRebirthMsg");
+    if(!adminLoggedIn){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Not logged in.";
+        return;
+    }
+    if(!usernameTarget){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Enter username.";
+        return;
+    }
+    if(isNaN(newValue) || newValue < 0){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Invalid rebirth value.";
+        return;
+    }
+
+    try{
+        const {error} = await supabaseClient
+            .from("leaderboard")
+            .upsert({ username: usernameTarget, rebirths: newValue }, { onConflict: "username" });
+        if(error) throw error;
+
+        // If you modify your own username, update local rebirths too
+        if(usernameTarget === username){
+            rebirths = newValue;
+            updateUI();
+            saveGame();
+        }
+
+        msgEl.style.color = "lime";
+        msgEl.textContent = `Set ${usernameTarget} to ${newValue} rebirths.`;
+        fetchLeaderboard();
+    }catch(err){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Error updating leaderboard.";
+    }
+}
+
+async function adminAddRebirths(){
+    const msgEl = document.getElementById("adminRebirthMsg");
+    if(!adminLoggedIn){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Not logged in.";
+        return;
+    }
+    const target = document.getElementById("adminTargetUser").value.trim();
+    let delta = parseInt(document.getElementById("adminRebirthAmount").value);
+    if(isNaN(delta)){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Enter a number.";
+        return;
+    }
+
+    // Get current value from leaderboard
+    try{
+        const {data, error} = await supabaseClient
+            .from("leaderboard")
+            .select("rebirths")
+            .eq("username", target)
+            .maybeSingle();
+        if(error) throw error;
+
+        const current = data ? (data.rebirths || 0) : 0;
+        let newVal = current + delta;
+        if(newVal < 0) newVal = 0;
+        await adminUpdateRebirths(target, newVal);
+    }catch(err){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Error fetching current rebirths.";
+    }
+}
+
+async function adminSetRebirths(){
+    const msgEl = document.getElementById("adminRebirthMsg");
+    if(!adminLoggedIn){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Not logged in.";
+        return;
+    }
+    const target = document.getElementById("adminTargetUser").value.trim();
+    let value = parseInt(document.getElementById("adminRebirthAmount").value);
+    if(isNaN(value) || value < 0){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Enter a non-negative number.";
+        return;
+    }
+    await adminUpdateRebirths(target, value);
+}
+
+// === ADMIN BAN / UNBAN LOCAL ===
+function adminBanUserFunc(){
+    const msgEl = document.getElementById("adminBanMsg");
+    if(!adminLoggedIn){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Not logged in.";
+        return;
+    }
+    const target = document.getElementById("adminBanUser").value.trim();
+    if(!target){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Enter username.";
+        return;
+    }
+    if(!bannedUsers.includes(target)){
+        bannedUsers.push(target);
+        saveBanList();
+    }
+    msgEl.style.color = "lime";
+    msgEl.textContent = `${target} banned locally.`;
+}
+
+function adminUnbanUserFunc(){
+    const msgEl = document.getElementById("adminBanMsg");
+    if(!adminLoggedIn){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Not logged in.";
+        return;
+    }
+    const target = document.getElementById("adminBanUser").value.trim();
+    if(!target){
+        msgEl.style.color = "red";
+        msgEl.textContent = "Enter username.";
+        return;
+    }
+    bannedUsers = bannedUsers.filter(u => u !== target);
+    saveBanList();
+    msgEl.style.color = "lime";
+    msgEl.textContent = `${target} unbanned locally.`;
 }
 
 // === INIT ON LOAD ===
@@ -469,6 +802,14 @@ window.onload=()=>{
     }
 
     loadOrAskUsername();
+    loadBanList();
+
+    if(isUserBanned(username)){
+        alert("You are banned on this device.");
+        document.getElementById("container").style.display = "none";
+        return;
+    }
+
     syncPlayerToSupabase();
     startLeaderboardLoop();
     updateUI();
