@@ -50,6 +50,68 @@ input { width: 120px; padding: 6px; text-align: center; }
 #ethanContainer { position:fixed; right:20px; bottom:50px; display:flex; flex-direction:column; align-items:center; pointer-events:none; }
 #ethanImage { width:80px; height:80px; border-radius:10px; margin-bottom:5px; }
 #ethanBubble { background:#000; color:lime; padding:4px 8px; border-radius:6px; font-size:12px; display:none; text-align:center; max-width:120px; }
+
+/* === ACHIEVEMENTS MENU === */
+#achievementsButton {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 20;
+}
+
+#achievementsMenu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #111;
+    border: 3px solid gold;
+    box-shadow: 0 0 40px red, 0 0 70px gold;
+    border-radius: 15px;
+    padding: 20px 25px;
+    width: 320px;
+    max-width: 90%;
+    display: none;
+    z-index: 30;
+}
+
+#achievementsMenu h2 {
+    margin-top: 0;
+    text-shadow: 0 0 10px gold;
+}
+
+.achievement {
+    text-align: left;
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.achievement span.status {
+    float: right;
+    font-weight: bold;
+}
+
+.achievement.unlocked {
+    color: lime;
+}
+
+.achievement.locked {
+    color: #777;
+}
+
+#achievementsClose {
+    margin-top: 15px;
+    width: 100%;
+}
+
+/* Optional dim background behind menu */
+#achievementsOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    z-index: 25;
+}
 </style>
 </head>
 <body>
@@ -99,6 +161,24 @@ Loading leaderboard...
 <div id="ethanBubble"></div>
 </div>
 
+<!-- ACHIEVEMENTS BUTTON -->
+<button id="achievementsButton" onclick="toggleAchievementsMenu()">Achievements</button>
+
+<!-- ACHIEVEMENTS OVERLAY + MENU -->
+<div id="achievementsOverlay" onclick="toggleAchievementsMenu()"></div>
+<div id="achievementsMenu">
+    <h2>Achievements</h2>
+    <div class="achievement locked" id="achScore100k">
+        100K Adrains
+        <span class="status">Locked</span>
+    </div>
+    <div class="achievement locked" id="achRebirth900">
+        900 Rebirths
+        <span class="status">Locked</span>
+    </div>
+    <button id="achievementsClose" onclick="toggleAchievementsMenu()">Close</button>
+</div>
+
 <script src="https://unpkg.com/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
 <script>
 // === SUPABASE ===
@@ -111,6 +191,10 @@ let username=null, score=0, multiplier=1, autoClickers=0, autoCost=50, multiCost
 let rebirthLevel=0, autoLevel=0, multiLevel=0;
 let ethanOwned=false;
 let ethanBonus=100;
+
+// Achievements state
+let achScore100kUnlocked=false;
+let achRebirth900Unlocked=false;
 
 // === ELEMENTS ===
 const scoreEl=document.getElementById("score");
@@ -127,6 +211,42 @@ const ethanImage=document.getElementById("ethanImage");
 const ethanBubble=document.getElementById("ethanBubble");
 const buyEthanBtn=document.getElementById("buyEthanBtn");
 
+// Achievement elements
+const achievementsOverlay=document.getElementById("achievementsOverlay");
+const achievementsMenu=document.getElementById("achievementsMenu");
+const achScore100kEl=document.getElementById("achScore100k");
+const achRebirth900El=document.getElementById("achRebirth900");
+
+// === ACHIEVEMENTS MENU TOGGLE ===
+function toggleAchievementsMenu(){
+    const isOpen = achievementsMenu.style.display === "block";
+    if(isOpen){
+        achievementsMenu.style.display="none";
+        achievementsOverlay.style.display="none";
+    }else{
+        achievementsMenu.style.display="block";
+        achievementsOverlay.style.display="block";
+    }
+}
+
+// === ACHIEVEMENTS CHECK ===
+function updateAchievements(){
+    // 100K Adrains achievement
+    if(!achScore100kUnlocked && score >= 100000){
+        achScore100kUnlocked = true;
+        achScore100kEl.classList.remove("locked");
+        achScore100kEl.classList.add("unlocked");
+        achScore100kEl.querySelector(".status").textContent = "Unlocked!";
+    }
+    // 900 Rebirths achievement
+    if(!achRebirth900Unlocked && rebirths >= 900){
+        achRebirth900Unlocked = true;
+        achRebirth900El.classList.remove("locked");
+        achRebirth900El.classList.add("unlocked");
+        achRebirth900El.querySelector(".status").textContent = "Unlocked!";
+    }
+}
+
 // === UI UPDATE ===
 function updateUI(){
     scoreEl.textContent=Math.floor(score);
@@ -134,6 +254,7 @@ function updateUI(){
     autoCostEl.textContent=autoCost;
     multiCostEl.textContent=multiCost;
     rebirthCostEl.textContent=rebirthCost;
+    updateAchievements();
 }
 
 // === FLOATS & SPARKS ===
@@ -206,7 +327,23 @@ function spinSlot(){let rawInput=document.getElementById("betAmount").value.trim
 document.getElementById("betAmount").addEventListener("keydown",e=>{if(e.key==="Enter"){spinSlot(); checkCheat(document.getElementById("betAmount").value);}});
 
 // === SAVE SYSTEM ===
-function saveGame(){localStorage.setItem("adrianCasinoSave",JSON.stringify({score,multiplier,autoClickers,autoCost,multiCost,rebirths,rebirthCost,autoLevel,multiLevel,rebirthLevel,ethanOwned}));}
+function saveGame(){
+    localStorage.setItem("adrianCasinoSave",JSON.stringify({
+        score,
+        multiplier,
+        autoClickers,
+        autoCost,
+        multiCost,
+        rebirths,
+        rebirthCost,
+        autoLevel,
+        multiLevel,
+        rebirthLevel,
+        ethanOwned,
+        achScore100kUnlocked,
+        achRebirth900Unlocked
+    }));
+}
 
 // === USERNAME + LEADERBOARD ===
 function loadOrAskUsername(){let saved=localStorage.getItem("adrianUsername"); if(!saved){let input=prompt("Enter a username:"); if(!input) input="Guest_"+Math.floor(Math.random()*100000); localStorage.setItem("adrianUsername",input); saved=input;} username=saved; usernameDisplayEl.textContent=username;}
@@ -229,7 +366,37 @@ function checkCheat(input){
 // === INIT ON LOAD ===
 window.onload=()=>{
     let save=JSON.parse(localStorage.getItem("adrianCasinoSave"));
-    if(save){score=save.score; multiplier=save.multiplier; autoClickers=save.autoClickers; autoCost=save.autoCost; multiCost=save.multiCost; rebirths=save.rebirths; rebirthCost=save.rebirthCost||10000; autoLevel=save.autoLevel||0; multiLevel=save.multiLevel||0; rebirthLevel=save.rebirthLevel||0; ethanOwned=save.ethanOwned||false; if(ethanOwned) ethanImage.style.display="block";}
+    if(save){
+        score=save.score;
+        multiplier=save.multiplier;
+        autoClickers=save.autoClickers;
+        autoCost=save.autoCost;
+        multiCost=save.multiCost;
+        rebirths=save.rebirths;
+        rebirthCost=save.rebirthCost||10000;
+        autoLevel=save.autoLevel||0;
+        multiLevel=save.multiLevel||0;
+        rebirthLevel=save.rebirthLevel||0;
+        ethanOwned=save.ethanOwned||false;
+        if(ethanOwned) ethanImage.style.display="block";
+
+        // Load achievements from save
+        achScore100kUnlocked = !!save.achScore100kUnlocked;
+        achRebirth900Unlocked = !!save.achRebirth900Unlocked;
+    }
+
+    // Reflect loaded achievements in UI
+    if(achScore100kUnlocked){
+        achScore100kEl.classList.remove("locked");
+        achScore100kEl.classList.add("unlocked");
+        achScore100kEl.querySelector(".status").textContent = "Unlocked!";
+    }
+    if(achRebirth900Unlocked){
+        achRebirth900El.classList.remove("locked");
+        achRebirth900El.classList.add("unlocked");
+        achRebirth900El.querySelector(".status").textContent = "Unlocked!";
+    }
+
     loadOrAskUsername();
     syncPlayerToSupabase();
     startLeaderboardLoop();
