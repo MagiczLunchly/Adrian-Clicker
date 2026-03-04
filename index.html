@@ -69,7 +69,7 @@ input { width: 120px; padding: 6px; text-align: center; }
     box-shadow: 0 0 40px red, 0 0 70px gold;
     border-radius: 15px;
     padding: 20px 25px;
-    width: 320px;
+    width: 340px;
     max-width: 90%;
     display: none;
     z-index: 30;
@@ -82,8 +82,8 @@ input { width: 120px; padding: 6px; text-align: center; }
 
 .achievement {
     text-align: left;
-    margin: 8px 0;
-    font-size: 14px;
+    margin: 4px 0;
+    font-size: 13px;
 }
 
 .achievement span.status {
@@ -100,7 +100,7 @@ input { width: 120px; padding: 6px; text-align: center; }
 }
 
 #achievementsClose {
-    margin-top: 15px;
+    margin-top: 10px;
     width: 100%;
 }
 
@@ -176,14 +176,59 @@ Rebirths: <span id="rebirths">0</span>
 <div id="achievementsOverlay" onclick="toggleAchievementsMenu()"></div>
 <div id="achievementsMenu">
   <h2>Achievements</h2>
+
+  <!-- Adrains milestones -->
+  <div class="achievement locked" id="achScore1k">
+    1K Adrains
+    <span class="status">Locked</span>
+  </div>
+  <div class="achievement locked" id="achScore10k">
+    10K Adrains
+    <span class="status">Locked</span>
+  </div>
   <div class="achievement locked" id="achScore100k">
     100K Adrains
+    <span class="status">Locked</span>
+  </div>
+  <div class="achievement locked" id="achScore1m">
+    1M Adrains
+    <span class="status">Locked</span>
+  </div>
+
+  <!-- Rebirth milestones -->
+  <div class="achievement locked" id="achRebirth10">
+    10 Rebirths
+    <span class="status">Locked</span>
+  </div>
+  <div class="achievement locked" id="achRebirth100">
+    100 Rebirths
     <span class="status">Locked</span>
   </div>
   <div class="achievement locked" id="achRebirth900">
     900 Rebirths
     <span class="status">Locked</span>
   </div>
+
+  <!-- Auto Adrainer milestones -->
+  <div class="achievement locked" id="achAuto1">
+    1 Auto Adrainer
+    <span class="status">Locked</span>
+  </div>
+  <div class="achievement locked" id="achAuto10">
+    10 Auto Adrainers
+    <span class="status">Locked</span>
+  </div>
+
+  <!-- Multiplier milestones -->
+  <div class="achievement locked" id="achMulti5">
+    5x Multiplier
+    <span class="status">Locked</span>
+  </div>
+  <div class="achievement locked" id="achMulti20">
+    20x Multiplier
+    <span class="status">Locked</span>
+  </div>
+
   <button id="achievementsClose" onclick="toggleAchievementsMenu()">Close</button>
 </div>
 
@@ -251,9 +296,18 @@ let rebirthLevel=0, autoLevel=0, multiLevel=0;
 let ethanOwned=false;
 let ethanBonus=100;
 
-// Achievements state
+// Achievements state (booleans)
+let achScore1kUnlocked=false;
+let achScore10kUnlocked=false;
 let achScore100kUnlocked=false;
+let achScore1mUnlocked=false;
+let achRebirth10Unlocked=false;
+let achRebirth100Unlocked=false;
 let achRebirth900Unlocked=false;
+let achAuto1Unlocked=false;
+let achAuto10Unlocked=false;
+let achMulti5Unlocked=false;
+let achMulti20Unlocked=false;
 
 // Golden cookie style boost state
 let boostActive = false;
@@ -290,8 +344,17 @@ const buyEthanBtn=document.getElementById("buyEthanBtn");
 // Achievement elements
 const achievementsOverlay=document.getElementById("achievementsOverlay");
 const achievementsMenu=document.getElementById("achievementsMenu");
+const achScore1kEl=document.getElementById("achScore1k");
+const achScore10kEl=document.getElementById("achScore10k");
 const achScore100kEl=document.getElementById("achScore100k");
+const achScore1mEl=document.getElementById("achScore1m");
+const achRebirth10El=document.getElementById("achRebirth10");
+const achRebirth100El=document.getElementById("achRebirth100");
 const achRebirth900El=document.getElementById("achRebirth900");
+const achAuto1El=document.getElementById("achAuto1");
+const achAuto10El=document.getElementById("achAuto10");
+const achMulti5El=document.getElementById("achMulti5");
+const achMulti20El=document.getElementById("achMulti20");
 
 // Golden cookie elements
 const goldBoostImg = document.getElementById("goldBoostImg");
@@ -321,18 +384,86 @@ function toggleAchievementsMenu(){
 }
 
 // === ACHIEVEMENTS CHECK ===
+function unlockAch(el, statusProp){
+    el.classList.remove("locked");
+    el.classList.add("unlocked");
+    el.querySelector(".status").textContent = "Unlocked!";
+    statusProp.value = true;
+}
+
 function updateAchievements(){
+    // Adrains
+    if(!achScore1kUnlocked && score >= 1000){
+        achScore1kUnlocked = true;
+        achScore1kEl.classList.remove("locked");
+        achScore1kEl.classList.add("unlocked");
+        achScore1kEl.querySelector(".status").textContent = "Unlocked!";
+    }
+    if(!achScore10kUnlocked && score >= 10000){
+        achScore10kUnlocked = true;
+        achScore10kEl.classList.remove("locked");
+        achScore10kEl.classList.add("unlocked");
+        achScore10kEl.querySelector(".status").textContent = "Unlocked!";
+    }
     if(!achScore100kUnlocked && score >= 100000){
         achScore100kUnlocked = true;
         achScore100kEl.classList.remove("locked");
         achScore100kEl.classList.add("unlocked");
         achScore100kEl.querySelector(".status").textContent = "Unlocked!";
     }
+    if(!achScore1mUnlocked && score >= 1000000){
+        achScore1mUnlocked = true;
+        achScore1mEl.classList.remove("locked");
+        achScore1mEl.classList.add("unlocked");
+        achScore1mEl.querySelector(".status").textContent = "Unlocked!";
+    }
+
+    // Rebirths
+    if(!achRebirth10Unlocked && rebirths >= 10){
+        achRebirth10Unlocked = true;
+        achRebirth10El.classList.remove("locked");
+        achRebirth10El.classList.add("unlocked");
+        achRebirth10El.querySelector(".status").textContent = "Unlocked!";
+    }
+    if(!achRebirth100Unlocked && rebirths >= 100){
+        achRebirth100Unlocked = true;
+        achRebirth100El.classList.remove("locked");
+        achRebirth100El.classList.add("unlocked");
+        achRebirth100El.querySelector(".status").textContent = "Unlocked!";
+    }
     if(!achRebirth900Unlocked && rebirths >= 900){
         achRebirth900Unlocked = true;
         achRebirth900El.classList.remove("locked");
         achRebirth900El.classList.add("unlocked");
         achRebirth900El.querySelector(".status").textContent = "Unlocked!";
+    }
+
+    // Auto Adrainers
+    if(!achAuto1Unlocked && autoClickers >= 1){
+        achAuto1Unlocked = true;
+        achAuto1El.classList.remove("locked");
+        achAuto1El.classList.add("unlocked");
+        achAuto1El.querySelector(".status").textContent = "Unlocked!";
+    }
+    if(!achAuto10Unlocked && autoClickers >= 10){
+        achAuto10Unlocked = true;
+        achAuto10El.classList.remove("locked");
+        achAuto10El.classList.add("unlocked");
+        achAuto10El.querySelector(".status").textContent = "Unlocked!";
+    }
+
+    // Multiplier (base multiplier)
+    if(!achMulti5Unlocked && multiplier >= 5){
+        achMulti5Unlocked = true;
+        achMulti5El.classList.remove("locked");
+        achMulti5El.classList.add("unlocked");
+        achMulti5El.querySelector(".status").textContent = "Unlocked!";
+    }
+    if(!achMulti20Unlocked && multiplier >= 20){
+        achMulti20Unlocked = true;
+        achMulti20El.classList.remove("locked");
+        achMulti20El.classList.add("unlocked");
+        achMulti20El.querySelector(".status").textContent = "Unlocked!";
     }
 }
 
@@ -428,9 +559,39 @@ mainImage.addEventListener("click",(e)=>{
 });
 
 // === SHOP FUNCTIONS ===
-function buyAuto(){if(score>=autoCost){score-=autoCost;autoClickers++;autoLevel++; autoCost*=2; updateUI();}}
-function buyMulti(){if(score>=multiCost){score-=multiCost;multiplier++;multiLevel++; multiCost*=2; updateUI();}}
-function rebirth(){if(score>=rebirthCost){score-=rebirthCost;rebirths++;rebirthLevel++; score=0; multiplier=1; autoClickers=0; autoCost=50; multiCost=100; rebirthCost*=2; updateUI(); syncPlayerToSupabase();}}
+function buyAuto(){
+    if(score>=autoCost){
+        score-=autoCost;
+        autoClickers++;
+        autoLevel++;
+        autoCost*=2;
+        updateUI();
+    }
+}
+function buyMulti(){
+    if(score>=multiCost){
+        score-=multiCost;
+        multiplier++;
+        multiLevel++;
+        multiCost*=2;
+        updateUI();
+    }
+}
+function rebirth(){
+    if(score>=rebirthCost){
+        score-=rebirthCost;
+        rebirths++;
+        rebirthLevel++;
+        score=0;
+        multiplier=1;
+        autoClickers=0;
+        autoCost=50;
+        multiCost=100;
+        rebirthCost*=2;
+        updateUI();
+        syncPlayerToSupabase();
+    }
+}
 
 // === BUY ETHAN ===
 function buyEthan(){
@@ -505,8 +666,17 @@ function saveGame(){
         multiLevel,
         rebirthLevel,
         ethanOwned,
+        achScore1kUnlocked,
+        achScore10kUnlocked,
         achScore100kUnlocked,
-        achRebirth900Unlocked
+        achScore1mUnlocked,
+        achRebirth10Unlocked,
+        achRebirth100Unlocked,
+        achRebirth900Unlocked,
+        achAuto1Unlocked,
+        achAuto10Unlocked,
+        achMulti5Unlocked,
+        achMulti20Unlocked
     }));
 }
 
@@ -634,7 +804,6 @@ async function adminUpdateRebirths(usernameTarget, newValue){
             .upsert({ username: usernameTarget, rebirths: newValue }, { onConflict: "username" });
         if(error) throw error;
 
-        // If you modify your own username, update local rebirths too
         if(usernameTarget === username){
             rebirths = newValue;
             updateUI();
@@ -717,24 +886,34 @@ window.onload=()=>{
         ethanOwned=save.ethanOwned||false;
         if(ethanOwned) ethanImage.style.display="block";
 
+        achScore1kUnlocked = !!save.achScore1kUnlocked;
+        achScore10kUnlocked = !!save.achScore10kUnlocked;
         achScore100kUnlocked = !!save.achScore100kUnlocked;
+        achScore1mUnlocked = !!save.achScore1mUnlocked;
+        achRebirth10Unlocked = !!save.achRebirth10Unlocked;
+        achRebirth100Unlocked = !!save.achRebirth100Unlocked;
         achRebirth900Unlocked = !!save.achRebirth900Unlocked;
+        achAuto1Unlocked = !!save.achAuto1Unlocked;
+        achAuto10Unlocked = !!save.achAuto10Unlocked;
+        achMulti5Unlocked = !!save.achMulti5Unlocked;
+        achMulti20Unlocked = !!save.achMulti20Unlocked;
     }
 
-    if(achScore100kUnlocked){
-        achScore100kEl.classList.remove("locked");
-        achScore100kEl.classList.add("unlocked");
-        achScore100kEl.querySelector(".status").textContent = "Unlocked!";
-    }
-    if(achRebirth900Unlocked){
-        achRebirth900El.classList.remove("locked");
-        achRebirth900El.classList.add("unlocked");
-        achRebirth900El.querySelector(".status").textContent = "Unlocked!";
-    }
+    // reflect loaded achievements
+    if(achScore1kUnlocked){achScore1kEl.classList.remove("locked"); achScore1kEl.classList.add("unlocked"); achScore1kEl.querySelector(".status").textContent="Unlocked!";}
+    if(achScore10kUnlocked){achScore10kEl.classList.remove("locked"); achScore10kEl.classList.add("unlocked"); achScore10kEl.querySelector(".status").textContent="Unlocked!";}
+    if(achScore100kUnlocked){achScore100kEl.classList.remove("locked"); achScore100kEl.classList.add("unlocked"); achScore100kEl.querySelector(".status").textContent="Unlocked!";}
+    if(achScore1mUnlocked){achScore1mEl.classList.remove("locked"); achScore1mEl.classList.add("unlocked"); achScore1mEl.querySelector(".status").textContent="Unlocked!";}
+    if(achRebirth10Unlocked){achRebirth10El.classList.remove("locked"); achRebirth10El.classList.add("unlocked"); achRebirth10El.querySelector(".status").textContent="Unlocked!";}
+    if(achRebirth100Unlocked){achRebirth100El.classList.remove("locked"); achRebirth100El.classList.add("unlocked"); achRebirth100El.querySelector(".status").textContent="Unlocked!";}
+    if(achRebirth900Unlocked){achRebirth900El.classList.remove("locked"); achRebirth900El.classList.add("unlocked"); achRebirth900El.querySelector(".status").textContent="Unlocked!";}
+    if(achAuto1Unlocked){achAuto1El.classList.remove("locked"); achAuto1El.classList.add("unlocked"); achAuto1El.querySelector(".status").textContent="Unlocked!";}
+    if(achAuto10Unlocked){achAuto10El.classList.remove("locked"); achAuto10El.classList.add("unlocked"); achAuto10El.querySelector(".status").textContent="Unlocked!";}
+    if(achMulti5Unlocked){achMulti5El.classList.remove("locked"); achMulti5El.classList.add("unlocked"); achMulti5El.querySelector(".status").textContent="Unlocked!";}
+    if(achMulti20Unlocked){achMulti20El.classList.remove("locked"); achMulti20El.classList.add("unlocked"); achMulti20El.querySelector(".status").textContent="Unlocked!";}
 
     loadOrAskUsername();
 
-    // HARD-CODED BAN CHECK
     if(isUserBanned(username)){
         alert("You are banned on this device.");
         document.getElementById("container").style.display = "none";
@@ -752,4 +931,5 @@ updateUI();
 </script>
 </body>
 </html>
+
 
