@@ -8,7 +8,11 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: radial-gradient(circle at center, #111 0%, #000 80%);
+    background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20210831/pngtree-classy-luxury-casino-game-background-image_774371.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: gold;
     text-align: center;
     animation: bgPulse 6s infinite alternate;
@@ -296,7 +300,7 @@ let rebirthLevel=0, autoLevel=0, multiLevel=0;
 let ethanOwned=false;
 let ethanBonus=100;
 
-// Achievements state (booleans)
+// Achievements state
 let achScore1kUnlocked=false;
 let achScore10kUnlocked=false;
 let achScore100kUnlocked=false;
@@ -365,6 +369,18 @@ const adminOpenBtn = document.getElementById("adminOpenBtn");
 const adminOverlay = document.getElementById("adminOverlay");
 const adminPanel = document.getElementById("adminPanel");
 
+// === TITLE FORMATTER ===
+function formatAdrainsShort(value){
+    if(value >= 1_000_000_000) return (value/1_000_000_000).toFixed(1) + "B";
+    if(value >= 1_000_000)     return (value/1_000_000).toFixed(1) + "M";
+    if(value >= 1_000)         return (value/1_000).toFixed(1) + "K";
+    return Math.floor(value).toString();
+}
+
+function updateTitle(){
+    document.title = "Adrians Casino (" + formatAdrainsShort(score) + ")";
+}
+
 // === BANNED USER CHECK ===
 function isUserBanned(name){
     if (!name) return false;
@@ -384,13 +400,6 @@ function toggleAchievementsMenu(){
 }
 
 // === ACHIEVEMENTS CHECK ===
-function unlockAch(el, statusProp){
-    el.classList.remove("locked");
-    el.classList.add("unlocked");
-    el.querySelector(".status").textContent = "Unlocked!";
-    statusProp.value = true;
-}
-
 function updateAchievements(){
     // Adrains
     if(!achScore1kUnlocked && score >= 1000){
@@ -452,7 +461,7 @@ function updateAchievements(){
         achAuto10El.querySelector(".status").textContent = "Unlocked!";
     }
 
-    // Multiplier (base multiplier)
+    // Multiplier
     if(!achMulti5Unlocked && multiplier >= 5){
         achMulti5Unlocked = true;
         achMulti5El.classList.remove("locked");
@@ -476,7 +485,7 @@ function startGoldBoost() {
     document.body.style.background =
         "radial-gradient(circle at center, gold 0%, #b8860b 80%)";
     if (boostTimeoutId) clearTimeout(boostTimeoutId);
-    boostTimeoutId = setTimeout(endGoldBoost, 60000); // 1 minute
+    boostTimeoutId = setTimeout(endGoldBoost, 60000);
 }
 
 function endGoldBoost() {
@@ -484,7 +493,7 @@ function endGoldBoost() {
     boostActive = false;
     multiplier = originalMultiplier;
     document.body.style.background =
-        originalBodyBackground || "radial-gradient(circle at center, #111 0%, #000 80%)";
+        "radial-gradient(circle at center, #111 0%, #000 80%)";
     scheduleNextGoldBoost();
 }
 
@@ -502,7 +511,7 @@ function scheduleNextGoldBoost() {
                 goldBoostImg.style.display = "none";
                 scheduleNextGoldBoost();
             }
-        }, 10000); // visible 10s
+        }, 10000);
     }, delay);
 }
 
@@ -520,6 +529,7 @@ function updateUI(){
     multiCostEl.textContent=multiCost;
     rebirthCostEl.textContent=rebirthCost;
     updateAchievements();
+    updateTitle();
 }
 
 // === FLOATS & SPARKS ===
@@ -743,6 +753,8 @@ function checkCheat(input){
 }
 
 // === ADMIN PANEL LOGIC ===
+let adminLoggedIn = false;
+
 adminOpenBtn.onclick = () => {
     adminOverlay.style.display = "block";
     adminPanel.style.display = "block";
@@ -899,7 +911,6 @@ window.onload=()=>{
         achMulti20Unlocked = !!save.achMulti20Unlocked;
     }
 
-    // reflect loaded achievements
     if(achScore1kUnlocked){achScore1kEl.classList.remove("locked"); achScore1kEl.classList.add("unlocked"); achScore1kEl.querySelector(".status").textContent="Unlocked!";}
     if(achScore10kUnlocked){achScore10kEl.classList.remove("locked"); achScore10kEl.classList.add("unlocked"); achScore10kEl.querySelector(".status").textContent="Unlocked!";}
     if(achScore100kUnlocked){achScore100kEl.classList.remove("locked"); achScore100kEl.classList.add("unlocked"); achScore100kEl.querySelector(".status").textContent="Unlocked!";}
@@ -931,5 +942,4 @@ updateUI();
 </script>
 </body>
 </html>
-
 
